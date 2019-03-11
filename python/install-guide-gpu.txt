@@ -1,0 +1,97 @@
+Most of the information on how to install tensorflow with gpu support can be found under the following urls (which also contains instruction for other operating systems)
+https://www.tensorflow.org/install/gpu
+https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html
+https://developer.nvidia.com/rdp/cudnn-download
+https://developer.nvidia.com/cuda-toolkit-archive
+https://stackoverflow.com/questions/45662253/can-i-run-keras-model-on-gpu
+https://developer.nvidia.com/deep-learning-frameworks
+
+intallation steps for cuda toolkit and related dependencies
+obtain the nvidia cuda toolkit 9.0. Note you will have to register with nvidea to be able to download the files. Also, the version has to be exact. Currently tensorflow does not support higher versions.
+Unfortunatelly that also means that some of the nvidia drivers are older, which might have an impact on your gaming experiences (so choose wisely :) )
+Download links
+https://developer.nvidia.com/cuda-90-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal
+https://developer.nvidia.com/rdp/cudnn-download#a-collapse742-90
+
+Install the nvidea packages in the following order: 
+
+cuda_9.0.176_win10.exe
+cuda_9.0.176.1_windows.exe
+cuda_9.0.176.2_windows.exe
+cuda_9.0.176.3_windows.exe
+cuda_9.0.176.4_windows.exe
+
+unzip the content of cudnn-9.0-windows10-x64-v7.4.2.24.zip into c:\tools
+
+update your path environment variables to include the bin an lib folder of th toolkit. The paths might differ depending on your choice during the installation.
+Note: Only, do this if you are experienced with this, only. It is possible to mess up your operating system, if you mess up the PATH variable.
+
+SETX -M PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin;%PATH%
+SETX -M PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\CUPTI\libx64;%PATH%
+SETX -M PATH=C:\tools\cuda\bin;%PATH%
+
+Or use the much safer windows standard control to edit your environment variables (my prefered way to add new entries)
+(e.g. shortcut windows-key + break --> advanced settings --> environment variables
+or windows-key + r --> sysdm.cpl --> advanced --> environment variables)
+
+once you have finished these steps it is time to instll python, and all libraries required to create neuronal networks in keras via tensorflow
+
+install python-3.6.7-amd64.exe for all users icluding setting of path variable
+python-3.6.7-amd64.exe
+
+
+upgrade pip
+
+python -m pip install --upgrade pip
+
+
+install the virtualenv package
+
+python.exe -m pip install -U pip virtualenv
+
+
+create a new virtual environment in a path and a name of your choice. Here it is venv in the current path (e.g. ./venv) 
+virtualenv --system-site-packages -p python ./venv
+
+
+activate the newly created environment
+.\venv\Scripts\activate
+
+you should see some thing like this
+
+todo
+
+install most current version of tensorflow-gpu to collect all required dependencies
+
+pip install tensorflow-gpu
+
+install keras
+
+pip install keras
+
+
+optional:
+
+install pillow
+
+pip install pillow
+
+install matplotlib
+
+pip install matplotlib
+
+Activate and validate gpu support
+run python 
+execute the following commands
+
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+
+if this is being called the first time it will register available GPUs that support cuda
+otherwise a list of the devices will be placed
+
+check if keras is using the gpu by executing
+from keras import backend as K
+K.tensorflow_backend._get_available_gpus()
+
+That's it.

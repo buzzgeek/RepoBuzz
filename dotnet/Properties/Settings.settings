@@ -1,0 +1,129 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BuzzNet.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="UseImageBrain" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UrlTrainingImages" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">..\..\..\data\training</Value>
+    </Setting>
+    <Setting Name="ImageExt" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">*.png</Value>
+    </Setting>
+    <Setting Name="DrawNet" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseInhibitors" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WeightDelta" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.1</Value>
+    </Setting>
+    <Setting Name="Train" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EnableCircleOptimization" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseOptimumDuringTraining" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UrlDefaultBrain" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">net.buzz</Value>
+    </Setting>
+    <Setting Name="UIRefreshRate" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="StartTrainWeight" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="EndTrainWeight" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.001</Value>
+    </Setting>
+    <Setting Name="Layers" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+    <Setting Name="ImgSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">8</Value>
+    </Setting>
+    <Setting Name="ScoreDelta" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.001</Value>
+    </Setting>
+    <Setting Name="ScoreXDelta" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.01</Value>
+    </Setting>
+    <Setting Name="ShowIntermediateResults" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseMatrixBrain" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="PositiveResult" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.55</Value>
+    </Setting>
+    <Setting Name="UseRandomWeights" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="NumberOfIterations" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">10000000</Value>
+    </Setting>
+    <Setting Name="ChangeAfterIterations" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="DeltaChangeBase" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.1</Value>
+    </Setting>
+    <Setting Name="ChangeDeltaAfterReusingBestWeightNumOfTimes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="DeltaChangeMinimum" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1E-05</Value>
+    </Setting>
+    <Setting Name="NumberOfDirectionChangesBeforeReset" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">4096</Value>
+    </Setting>
+    <Setting Name="ChangeDeltaAfterSubsequentWorstWeightScore" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="RelevantScoreDelta" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">1E-11</Value>
+    </Setting>
+    <Setting Name="UseMutation" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ChangeDeltaAfterSubsequentDeterioratingScore" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="Snapshot" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="LearningRate" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">0.01</Value>
+    </Setting>
+    <Setting Name="DesiredNumOfChartDataPoints" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="MaximumError" Type="System.Double" Scope="Application">
+      <Value Profile="(Default)">10000</Value>
+    </Setting>
+    <Setting Name="IsLogarithmicXAxis" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="PersistSnapshotImageTiles" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MaxX" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">10000000</Value>
+    </Setting>
+    <Setting Name="DataPointReduceFactor" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="EnablePreview" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="InitialZeroParams" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,7 @@
+dotnet/bin
+dotnet/obj
+dotnet/packages
+dotnet/.vs/
+dotnet/BuzzNet.csproj.user
+python/data/training/result
+data/training/result
