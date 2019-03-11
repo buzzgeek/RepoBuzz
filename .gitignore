@@ -1,7 +1,15 @@
 dotnet/bin
 dotnet/obj
 dotnet/packages
-dotnet/.vs/
+dotnet/.vs
 dotnet/BuzzNet.csproj.user
 python/data/training/result
 data/training/result
+hashcode_2019/dotnet/OnlineChallenge/.vs
+hashcode_2019/dotnet/OnlineChallenge/OnlineChallenge/bin
+hashcode_2019/dotnet/OnlineChallenge/OnlineChallenge/obj
+hashcode_practice/dotnet/Pizza/.vs
+hashcode_practice/dotnet/Pizza/Pizza/bin
+hashcode_practice/dotnet/Pizza/Pizza/obj
+hashcode_practice/dotnet/Pizza/StreamingVideos/bin
+hashcode_practice/dotnet/Pizza/StreamingVideos/obj

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OnlineChallenge": {
+      "commandName": "Project",
+      "commandLineArgs": "1 d"
+    }
+  }
+}
