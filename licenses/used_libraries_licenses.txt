@@ -1,0 +1,17 @@
+The BuzzNet project depends on the following thirdparty libraries/assemblies
+_______________________________
+Math.Net Numerics
+
+This package provides classes and methods related to linear alebra, which is essential for dnn implementations.
+
+url: https://numerics.mathdotnet.com/
+MIT/X11 license: https://numerics.mathdotnet.com/License.html
+
+_______________________________
+Json.NET by Newtonsoft
+
+This is a popular JSON framework for .NET
+
+url: https://www.newtonsoft.com/json
+MIT license: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md
+_______________________________
