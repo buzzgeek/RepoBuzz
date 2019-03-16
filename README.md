@@ -7,3 +7,5 @@ The source contains a number of projects written in various languages, that I ha
 - RepoBuzz\data contains sample data that can be used to train and validate the two dnn implementations.
 
 - RepoBuzz\hashcode_2019 and RepoBuzz\hashcode_practice contain source code related to Google's HashCode 2019 challenge. The sources have been created in colaboration with https://github.com/Sinitax (so a huge Thanks to sinitax). I have created a related github repository HashCode2019 which contains code, that only my poor litle brain came up with.
+
+- RepoBuzz\cpp\project01 contain something really old in relation. A Win32 game of life presentation that uses the RGB color channels as competing entities/cells. It is quite prety. Has been implemented with VS 6 using very old win32 Windows programming...well I have even older code than this... 
