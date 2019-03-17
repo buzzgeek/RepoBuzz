@@ -136,11 +136,37 @@ namespace BuzzNet
 			Invalidate();
 		}
 
-		#endregion public methods
+        public void BeforeTerminate()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(BeforeTerminate));
+                return;
+            }
+            if (brain != null)
+            {
+                brain.BeforeTerminate();
+            }
+        }
 
-		#region protected methods
+        public void Terminate()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(Terminate));
+                return;
+            }
+            if (brain != null)
+            {
+                brain.Terminate();
+            }
+        }
 
-		protected override void OnPaint(PaintEventArgs e)
+        #endregion public methods
+
+        #region protected methods
+
+        protected override void OnPaint(PaintEventArgs e)
 		{
             if(curBrain != null)
                 curBrain.Draw(e.Graphics);
@@ -158,8 +184,7 @@ namespace BuzzNet
 		{
 			if( disposing )
 			{
-				brain.Dispose();
-                //brain2.Dispose();
+				brain.Shutdown();
 				if(components != null)
 				{
 					components.Dispose();
@@ -179,46 +204,10 @@ namespace BuzzNet
             //MessageBox.Show("Brain is availble ;)", "Note", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public void AddDataPoint(double error, double accuracy, ulong index)
-        {
-            if (diagnostics != null && diagnostics.Visible)
-            {
-                diagnostics.AddDataPoint(error, accuracy, index);
-            }
-        }
-
-        public void BeforeTerminate()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(BeforeTerminate));
-                return;
-            }
-            if (brain != null)
-            {
-                brain.BeforeTerminate();
-            }
-        }
-
-
-        public void Terminate()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(Terminate));
-                return;
-            }
-            if (brain != null)
-            {
-                brain.Terminate();
-            }
-        }
-
-
         private void OnInitBrain(object sender, DoWorkEventArgs e)
         {
             Brain.Setup();
-            brain = new Brain(this, 42, this.ClientSize.Width, this.ClientSize.Height);
+            brain = new Brain(this, 42, this.ClientSize.Width);
             //brain.CreateGrayMatter();
             curBrain = brain;
             brain.Activate();
@@ -248,14 +237,26 @@ namespace BuzzNet
                 Invalidate();
         }
 
-		#endregion private methods
+        #endregion private methods
 
-		#region Component Designer generated code
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
+        #region internal methods
+
+        internal void AddDataPoint(double error, double accuracy, ulong index)
+        {
+            if (diagnostics != null && diagnostics.Visible)
+            {
+                diagnostics.AddDataPoint(error, accuracy, index);
+            }
+        }
+
+        #endregion internal methods
+
+        #region Component Designer generated code
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
 		{
             this.dataGrid1 = new System.Windows.Forms.DataGrid();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();

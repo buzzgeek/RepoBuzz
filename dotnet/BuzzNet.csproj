@@ -84,6 +84,7 @@
     <Compile Include="FormDiagnostics.Designer.cs">
       <DependentUpon>FormDiagnostics.cs</DependentUpon>
     </Compile>
+    <Compile Include="IShutdown.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

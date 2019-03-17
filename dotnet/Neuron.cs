@@ -6,20 +6,45 @@ using System.Diagnostics;
 using System.Drawing;
 using Newtonsoft.Json;
 
+/// <summary>
+/// Copyright (c) 2019 Buzz-Barry Struck
+/// 
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in all
+/// copies or substantial portions of the Software.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+/// SOFTWARE.
+/// </summary>
+
 namespace BuzzNet
 {
     /// <summary>
     /// Summary description for Neuron.
     /// </summary>
-    public class Neuron : IDisposable
+    public class Neuron : IShutdown
     {
         #region consts
+
         private const int NUM_OF_SYNAPSES = 0;
         private const double TOLERANCE = 0.00001;
         private const int RADIUS = 5;
+
         #endregion consts
 
         #region members
+
         private ArrayList synapses = null;
         private ArrayList axons = null;
 
@@ -191,7 +216,7 @@ namespace BuzzNet
         ~Neuron()
         {
             terminate = true;
-            DisposeSynapses();
+            ShutdownSynapses();
         }
 
         #endregion destructor
@@ -239,7 +264,7 @@ namespace BuzzNet
         {
             synapses.Clear();
             axons.Clear();
-            DisposeSynapses();
+            ShutdownSynapses();
         }
 
 
@@ -289,7 +314,7 @@ namespace BuzzNet
                     synapse.Sender.RemoveAxonConnection(synapse);
                 }
 
-                synapse.Dispose();
+                synapse.Shutdown();
             }
             catch (System.Exception ex)
             {
@@ -322,7 +347,7 @@ namespace BuzzNet
             {
                 Debug.Assert(false, ex.ToString());
             }
-            synapse.Dispose();
+            synapse.Shutdown();
 
             System.GC.Collect();
         }
@@ -467,15 +492,15 @@ namespace BuzzNet
             }
         }
 
-        protected void DisposeSynapses()
+        protected void ShutdownSynapses()
         {
             foreach (Synapse syn in synapses)
             {
-                syn.Dispose();
+                syn.Shutdown();
             }
             foreach (Synapse syn in axons)
             {
-                syn.Dispose();
+                syn.Shutdown();
             }
         }
 
@@ -498,11 +523,11 @@ namespace BuzzNet
 
         #region IDisposable Members
 
-        public void Dispose()
+        public void Shutdown()
         {
             DisableSynapses(true);
             terminate = true;
-            DisposeSynapses();
+            ShutdownSynapses();
         }
 
         #endregion

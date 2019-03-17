@@ -152,9 +152,9 @@ namespace BuzzNet.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("8")]
-        public int ImgSize {
+        public int ImageTileSize {
             get {
-                return ((int)(this["ImgSize"]));
+                return ((int)(this["ImageTileSize"]));
             }
         }
         
@@ -389,6 +389,15 @@ namespace BuzzNet.Properties {
         public bool InitialZeroParams {
             get {
                 return ((bool)(this["InitialZeroParams"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double DefaultThreashold {
+            get {
+                return ((double)(this["DefaultThreashold"]));
             }
         }
     }
