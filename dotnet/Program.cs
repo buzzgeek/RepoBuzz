@@ -13,6 +13,16 @@ namespace BuzzNet
         [STAThread]
         static void Main()
         {
+            try
+            {
+                LogFactory.EnableLogging();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.Write(ex);
+                return;
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

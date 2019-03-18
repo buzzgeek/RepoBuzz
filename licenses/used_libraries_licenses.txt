@@ -15,3 +15,10 @@ This is a popular JSON framework for .NET
 url: https://www.newtonsoft.com/json
 MIT license: https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md
 _______________________________
+log4net
+
+This is a popular logging framework for .NET
+
+url: http://logging.apache.org/log4net/
+Apache License, Version 2.0: http://logging.apache.org/log4net/license.html
+_______________________________

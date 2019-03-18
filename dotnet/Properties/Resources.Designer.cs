@@ -3,68 +3,80 @@
 //     Dieser Code wurde von einem Tool generiert.
 //     Laufzeitversion:4.0.30319.42000
 //
-//     Änderungen an dieser Datei können fehlerhaftes Verhalten verursachen und gehen verloren, wenn
-//     der Code neu generiert wird.
+//     Änderungen an dieser Datei können falsches Verhalten verursachen und gehen verloren, wenn
+//     der Code erneut generiert wird.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BuzzNet.Properties
-{
-
-
+namespace BuzzNet.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
     /// </summary>
-    // Diese Klasse wurde von der StronglyTypedResourceBuilder-Klasse
-    // über ein Tool wie ResGen oder Visual Studio automatisch generiert.
+    // Diese Klasse wurde von der StronglyTypedResourceBuilder automatisch generiert
+    // -Klasse über ein Tool wie ResGen oder Visual Studio automatisch generiert.
     // Um einen Member hinzuzufügen oder zu entfernen, bearbeiten Sie die .ResX-Datei und führen dann ResGen
-    // mit der Option /str erneut aus, oder erstellen Sie Ihr VS-Projekt neu.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    // mit der /str-Option erneut aus, oder Sie erstellen Ihr VS-Projekt neu.
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if ((resourceMan == null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BuzzNet.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
-        ///   Ressourcenlookups, die diese stark typisierte Ressourcenklasse verwenden.
+        ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &lt;log4net&gt;
+        ///    &lt;!-- A1 is set to be a ConsoleAppender --&gt;
+        ///    &lt;appender name=&quot;A1&quot; type=&quot;log4net.Appender.ConsoleAppender&quot;&gt;
+        ///        &lt;!-- A1 uses PatternLayout --&gt;
+        ///        &lt;layout type=&quot;log4net.Layout.PatternLayout&quot;&gt;
+        ///            &lt;!-- Print the date in ISO 8601 format --&gt;
+        ///            &lt;conversionPattern value=&quot;%date [%thread] %-5level %logger - %message%newline&quot; /&gt;
+        ///        &lt;/layout&gt;
+        ///    &lt;/appender&gt;
+        ///
+        ///	&lt;appender name=&quot;RollingFileAppender&quot; type=&quot;log4net.Appender.RollingFileAppender&quot;&gt;
+        ///        &lt;file value= [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string log4net {
+            get {
+                return ResourceManager.GetString("log4net", resourceCulture);
             }
         }
     }

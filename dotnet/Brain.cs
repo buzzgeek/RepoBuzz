@@ -56,6 +56,8 @@ namespace BuzzNet
     /// </summary>
     public class Brain : IBrain, IShutdown
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Brain));
+
         #region internal interfaces and classes
 
         /// <summary>
@@ -155,7 +157,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex.Message);
                 }
             }
 
@@ -183,7 +185,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex);
                 }
             }
 
@@ -229,7 +231,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine(ex);
+                    log.Error(ex.Message);
                 }
                 return null;
             }
@@ -244,7 +246,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex.Message);
                 }
                 return -1.0;
             }
@@ -297,7 +299,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex.Message);
                 }
             }
 
@@ -359,7 +361,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex.Message);
                 }
 
                 return res;
@@ -378,7 +380,7 @@ namespace BuzzNet
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    log.Error(ex.Message);
                 }
 
                 return res;
@@ -826,7 +828,7 @@ namespace BuzzNet
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                log.Error(ex.Message);
             }
         }
 
@@ -843,7 +845,7 @@ namespace BuzzNet
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                log.Error(ex.Message);
             }
 
         }
@@ -1170,10 +1172,10 @@ namespace BuzzNet
 
                 Save(string.Format("{0}\\result\\{1}\\{2}", Properties.Settings.Default.UrlTrainingImages, timeToken, Properties.Settings.Default.UrlDefaultBrain));
             }
-            catch (Exception ex) {
-                Console.Error.WriteLine(ex);
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
             }
-            //saveEvent.Set();
             isSaving = false;
         }
 
