@@ -15,3 +15,7 @@ hashcode_practice/dotnet/Pizza/StreamingVideos/bin
 hashcode_practice/dotnet/Pizza/StreamingVideos/obj
 cpp/project01/Debug
 cpp/project01/Release
+cpp/project01/.vs
+cpp/project01/UpgradeLog.htm
+cpp/project01/project01.vcxproj.filters
+cpp/project01/project01.vcxproj.user

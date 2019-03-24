@@ -33,53 +33,66 @@ namespace BuzzNet
 		Inhibitor
 	}
 
-	/// <summary>
-	/// Summary description for Synapse.
-	/// </summary>
-	public class Synapse : IShutdown
+    /// <summary>
+    /// Summary description for Synapse.
+    /// </summary>
+    /// 
+
+    public class SynapseGUI
+    {
+        #region public static members
+
+        public static readonly Pen penActivate = new Pen(Color.Green);
+        public static readonly Pen penInhibit = new Pen(Color.Red);
+        public static readonly Pen penDisabled = new Pen(Color.Gray);
+        
+        #endregion public static members
+
+        #region public static methods 
+
+        public static void Draw(Graphics g, Synapse s)
+        {
+            lock (s)
+            {
+                Pen pen = s.Disable ? penDisabled : (s.Type == ESynapsisType.Activator ? penActivate : penInhibit);
+
+                if (s.Sender != null && s.Receiver != null)
+                {
+                    Point begin = s.Sender.Position;
+                    Point end = s.Receiver.Position;
+                    begin.X += s.Sender.Radius;
+                    end.X -= s.Receiver.Radius;
+                    g.DrawLine(pen, begin, end);
+                }
+            }
+        }
+
+        #endregion public static methods
+    }
+
+    public class Synapse : IShutdown
 	{
 		#region members
+
         private const double TOLERANCE = 0.00001;
-
-		// global unique identifier of this synapis
 		private string id = "";
-
-		
-		// indicated if there is a signal in the Synapse
-		private bool signal = false;
-
+		private bool signal = false; // indicated if there is a signal in the Synapse
+        private ESynapsisType type = ESynapsisType.Activator; // inhibitor or activator
         private AutoResetEvent signalGet = null;
         private AutoResetEvent signalSet = null;
-
-		private Pen penActivate = new Pen (Color.Green);
-		private Pen penInhibit = new Pen (Color.Red);
-	
-		private Pen penSet = new Pen (Color.Gold);
-		private Pen penGet = new Pen (Color.Blue);
-		private Pen penDisabled = new Pen (Color.Gray);
-
 		private Neuron sender = null;
 		private Neuron receiver = null;
 		private bool disable = false;
-
-		// the Synapse' strength;
-		private double weight = 1.0;
+		private double weight = 1.0; // the Synapse' strength;
         private double score = 0.0;
         private double bestScore = double.MinValue;
         private double bestWeight = 1.0;
-
         private int layerReceiver = 0;
         private int indexReceiver = 0;
         private int layerSender = 0;
         private int indexSender = 0;
-
-        
-		// inhibitor or activator
-		private ESynapsisType type = ESynapsisType.Activator;
-
-		private Random rand = null;
-
-		private bool disposed = false;
+        private Random rand = null;
+		private bool terminate = false;
 
 		#endregion members
 
@@ -255,25 +268,6 @@ namespace BuzzNet
             signalGet.Set();
 		}
 
-		
-		public void Draw (Graphics g)
-		{
-            lock (this)
-            {
-                Pen pen = (type == ESynapsisType.Activator ? penActivate : penInhibit);
-
-                //Point end = neuron != null ? neuron.Position : new Point(begin.X + 40, begin.Y); 
-                if (sender != null && receiver != null)
-                {
-                    Point begin = sender.Position;
-                    Point end = receiver.Position;
-                    begin.X += sender.Radius;
-                    end.X -= receiver.Radius;
-                    g.DrawLine(pen, begin, end);
-                }
-            }
-		}
-
 		public void Rethink()
 		{
             lock(this)
@@ -285,20 +279,14 @@ namespace BuzzNet
 
 		#endregion pubic methods
 
-		#region protected methods
-		#endregion protecetd methods
-
-		#region private methods
-		#endregion private methods
-
-		#region IDisposable Members
+		#region IShutdown Members
 
         public void Shutdown()
         {
-            if (!disposed)
+            if (!terminate)
             {
                 disable = true;
-                disposed = true;
+                terminate = true;
                 signalGet.Set();
                 signalSet.Set();
             }

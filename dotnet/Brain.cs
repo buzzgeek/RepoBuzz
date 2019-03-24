@@ -31,6 +31,149 @@ using MathNet.Numerics.Data.Text;
 
 namespace BuzzNet
 {
+    public class BrainGUI
+    {
+        private const int ORIGIN_X = 20;
+        private const int ORIGIN_Y = 20;
+        private const int IMG_OFFSET_X = 10;
+        private const int IMG_OFFSET_Y = 10;
+
+        private static int LAYERS = Properties.Settings.Default.Layers;
+        private static int TILE_SIZE = Properties.Settings.Default.ImageTileSize;
+        private static readonly int NEURONS = TILE_SIZE * TILE_SIZE;
+
+        public static readonly Brush brushBlack = new SolidBrush(Color.Black);
+        public static readonly Brush brushWhite = new SolidBrush(Color.White);
+        public static readonly Brush brushGreen = new SolidBrush(Color.Green);
+        public static readonly Brush brushRed = new SolidBrush(Color.DarkRed);
+        public static readonly Pen penWhite = new Pen(Color.White);
+
+        public static Font fontSnaptshot = new Font(FontFamily.GenericMonospace, 24, FontStyle.Bold);
+        public static readonly Bitmap canvas = new Bitmap(2000, 4000);
+        private static readonly Bitmap resTemplateImage = new Bitmap(TILE_SIZE, TILE_SIZE);
+
+        private static Bitmap guiInput = new Bitmap(TILE_SIZE, TILE_SIZE);
+        private static Bitmap guiOutput = new Bitmap(TILE_SIZE, TILE_SIZE);
+        private static Bitmap guiExpected = new Bitmap(TILE_SIZE, TILE_SIZE);
+
+        public static Bitmap GuiInput { get => guiInput; set => guiInput = value; }
+        public static Bitmap GuiOutput { get => guiOutput; set => guiOutput = value; }
+        public static Bitmap GuiExpected { get => guiExpected; set => guiExpected = value; }
+
+        public static void Setup()
+        {
+            using (Graphics graphicsHandle = Graphics.FromImage(resTemplateImage))
+            {
+                graphicsHandle.FillRectangle(brushBlack, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE));
+                graphicsHandle.DrawEllipse(penWhite, new Rectangle(0, 0, TILE_SIZE - 1, TILE_SIZE - 1));
+            }
+
+            using (Graphics graphicsHandle = Graphics.FromImage(canvas))
+            {
+                graphicsHandle.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
+            }
+        }
+
+        public static void Draw(Graphics gHandle, Brain b)
+        {
+            gHandle.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
+
+            //if (false)
+            //{
+            //    using (Graphics g = Graphics.FromImage(canvas))
+            //    {
+            //        SolidBrush brush = new SolidBrush(Color.White);
+            //        Font font = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+            //        if (b.comment.Length > 0)
+            //            g.DrawString(b.comment,
+            //                font,
+            //                brush,
+            //                new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + ((TILE_SIZE / 2) - (font.Height / 2))));
+            //        font.Dispose();
+            //        brush.Dispose();
+            //        gHandle.DrawImage(canvas, new Point(0, 0));
+            //    }
+            //    return;
+            //}
+
+            if (b.imageIndex >= Brain.urlTrainingImages.Length)
+            {
+                return;
+            }
+
+            if (b.Active)
+            {
+                using (Graphics g = Graphics.FromImage(canvas))
+                {
+
+                    int row_offset = b.imageIndex * (TILE_SIZE + 1);
+
+                    if (Properties.Settings.Default.DrawNet)
+                    {
+                        for (int l = 0; l < LAYERS; ++l)
+                        {
+                            for (int n = 0; n < NEURONS; ++n)
+                            {
+                                NeuronGUI.Draw(g, b.BrainCells[l, n]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        row_offset = 0;
+                        g.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
+                    }
+
+                    if (Properties.Settings.Default.EnablePreview)
+                    {
+                        lock (b.brainLock)
+                        {
+                            if (b.comment.Length == 0 && Brain.urlTrainingImages != null && Brain.urlTrainingImages.Length > 0)
+                            {
+                                g.DrawImage(GuiExpected, new Point((IMG_OFFSET_X + TILE_SIZE + TILE_SIZE + 2), IMG_OFFSET_Y + row_offset));
+                                g.DrawImage(GuiInput, new Point(IMG_OFFSET_X, IMG_OFFSET_Y + row_offset));
+                                g.DrawImage(GuiOutput, new Point(IMG_OFFSET_X + TILE_SIZE + 1, IMG_OFFSET_Y + row_offset));
+                            }
+                        }
+                    }
+
+                    SolidBrush brush = new SolidBrush(Color.White);
+                    Font font = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+                    if (b.comment.Length > 0)
+                        g.DrawString(b.comment,
+                            font,
+                            brush,
+                            new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + ((TILE_SIZE / 2) - (font.Height / 2))));
+                    else if (b.imageIndex < Brain.urlTrainingImages.Length)
+                        g.DrawString(b.cluster.metrics.ToString(),
+                            font,
+                            brush,
+                            new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + TILE_SIZE + 4));
+                    font.Dispose();
+                    brush.Dispose();
+                }
+            }
+
+            gHandle.DrawImage(canvas, new Point(0, 0));
+        }
+
+        internal static void Apply(int r, int c, Bitmap image, Bitmap expImage)
+        {
+            using (Graphics g = Graphics.FromImage(guiInput))
+            {
+                g.DrawImage(image, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
+            }
+            using (Graphics g = Graphics.FromImage(guiExpected))
+            {
+                g.DrawImage(expImage, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
+            }
+        }
+
+        internal static void ApplyOutputMatrix(Matrix<double> res)
+        {
+            Brain.MatrixToImage(res, ref guiOutput);
+        }
+    }
 
     public interface IBrain
     {
@@ -66,7 +209,7 @@ namespace BuzzNet
         /// see http://neuralnetworksanddeeplearning.com/chap1.html for very good introduction and tutorial in python
         /// see https://sudeepraja.github.io/Neural/ on Backward propagation (excluding bias)
         /// </summary>
-        internal interface IDNN
+        public interface IDNN
         {
             double LearningRate { get; set; }
             void Init(int seed);
@@ -80,7 +223,7 @@ namespace BuzzNet
         /// <summary>
         /// A 'classic' deep neuronal network implementation using forward- and backwardpropagation including a whole lot of linear algebra 
         /// </summary>
-        internal class DNN : IDNN
+        public class DNN : IDNN
         {
             #region members
 
@@ -389,7 +532,7 @@ namespace BuzzNet
             #endregion activation functions
         }
 
-        internal class Metrics
+        public class Metrics
         {
             internal DNN dnn = null;
 
@@ -526,16 +669,7 @@ namespace BuzzNet
         private static int LAYERS = Properties.Settings.Default.Layers;
         private static int TILE_SIZE = Properties.Settings.Default.ImageTileSize;
         private static readonly int NEURONS = TILE_SIZE * TILE_SIZE;
-        private static readonly Bitmap resTemplateImage = new Bitmap(TILE_SIZE, TILE_SIZE);
 
-        private static readonly Brush brushBlack = new SolidBrush(Color.Black);
-        private static readonly Brush brushWhite = new SolidBrush(Color.White);
-        private static readonly Brush brushGreen = new SolidBrush(Color.Green);
-        private static readonly Brush brushRed = new SolidBrush(Color.DarkRed);
-        private static readonly Pen penWhite = new Pen(Color.White);
-
-        private static Font fontSnaptshot = new Font(FontFamily.GenericMonospace, 24, FontStyle.Bold);
-        private static readonly Bitmap canvas = new Bitmap(2000, 4000);
         internal readonly long totalNumberOfIterations = Properties.Settings.Default.NumberOfIterations; internal int imageIndex = 0;
 
         #endregion constants
@@ -543,18 +677,14 @@ namespace BuzzNet
         #region members
 
         private TestControl parent = null;
-        private object brainLock = new object();
+        public object brainLock = new object();
         private int width = 0;
 
-        private DNN cluster = null;
+        public DNN cluster = null;
         private Neuron[,] brainCells = new Neuron[LAYERS, NEURONS];
 
-        private static string[] urlTrainingImages = null;
-        private static string[] urlExpectedImages = null;
-
-        private Bitmap guiInput = new Bitmap(TILE_SIZE, TILE_SIZE);
-        private Bitmap guiOutput = new Bitmap(TILE_SIZE, TILE_SIZE);
-        private Bitmap guiExpected = new Bitmap(TILE_SIZE, TILE_SIZE);
+        public static string[] urlTrainingImages = null;
+        public static string[] urlExpectedImages = null;
 
         private Bitmap trainIn = new Bitmap(TILE_SIZE, TILE_SIZE);
         private Bitmap trainOut = new Bitmap(TILE_SIZE, TILE_SIZE);
@@ -573,6 +703,8 @@ namespace BuzzNet
         internal long iteration = 0;
         internal int tile = 0;
         internal string comment = "Setup...";
+
+        private Dictionary<string, Matrix<double>> imageTileMatricies = new Dictionary<string, Matrix<double>>();
 
         #endregion members
 
@@ -652,17 +784,6 @@ namespace BuzzNet
             {
                 urlTrainingImages = Directory.GetFiles(Properties.Settings.Default.UrlTrainingImages, Properties.Settings.Default.ImageExt);
             }
-
-            using (Graphics graphicsHandle = Graphics.FromImage(resTemplateImage))
-            {
-                graphicsHandle.FillRectangle(brushBlack, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE));
-                graphicsHandle.DrawEllipse(penWhite, new Rectangle(0, 0, TILE_SIZE - 1, TILE_SIZE - 1));
-            }
-
-            using (Graphics graphicsHandle = Graphics.FromImage(canvas))
-            {
-                graphicsHandle.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
-            }
         }
 
         public void Activate()
@@ -675,88 +796,6 @@ namespace BuzzNet
             return;
         }
 
-        public void Draw(Graphics gHandle)
-        {
-            gHandle.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
-
-            if (terminate)
-            {
-                using (Graphics g = Graphics.FromImage(canvas))
-                {
-                    SolidBrush brush = new SolidBrush(Color.White);
-                    Font font = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
-                    if (comment.Length > 0)
-                        g.DrawString(comment,
-                            font,
-                            brush,
-                            new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + ((TILE_SIZE / 2) - (font.Height / 2))));
-                    font.Dispose();
-                    brush.Dispose();
-                    gHandle.DrawImage(Brain.canvas, new Point(0, 0));
-                }
-                return;
-            }
-
-            if (imageIndex >= urlTrainingImages.Length)
-            {
-                return;
-            }
-
-            if (!terminate)
-            {
-                using (Graphics g = Graphics.FromImage(canvas))
-                {
-
-                    int row_offset = imageIndex * (TILE_SIZE + 1);
-
-                    if (Properties.Settings.Default.DrawNet)
-                    {
-                        for (int l = 0; l < LAYERS; ++l)
-                        {
-                            for (int n = 0; n < NEURONS; ++n)
-                            {
-                                BrainCells[l, n].Draw(g);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        row_offset = 0;
-                        g.FillRectangle(brushBlack, new Rectangle(new Point(0, 0), canvas.Size));
-                    }
-
-                    if (Properties.Settings.Default.EnablePreview)
-                    {
-                        lock (brainLock)
-                        {
-                            if (comment.Length == 0 && urlTrainingImages != null && urlTrainingImages.Length > 0)
-                            {
-                                g.DrawImage(guiExpected, new Point((IMG_OFFSET_X + TILE_SIZE + TILE_SIZE + 2), IMG_OFFSET_Y + row_offset));
-                                g.DrawImage(guiInput, new Point(IMG_OFFSET_X, IMG_OFFSET_Y + row_offset));
-                                g.DrawImage(guiOutput, new Point(IMG_OFFSET_X + TILE_SIZE + 1, IMG_OFFSET_Y + row_offset));
-                            }
-                        }
-                    }
-
-                    SolidBrush brush = new SolidBrush(Color.White);
-                    Font font = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
-                    if (comment.Length > 0)
-                        g.DrawString(comment,
-                            font,
-                            brush,
-                            new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + ((TILE_SIZE / 2) - (font.Height / 2))));
-                    else if (imageIndex < urlTrainingImages.Length)
-                        g.DrawString(cluster.metrics.ToString(),
-                            font,
-                            brush,
-                            new Point((IMG_OFFSET_X + 4), IMG_OFFSET_Y + TILE_SIZE + 4));
-                    font.Dispose();
-                    brush.Dispose();
-                }
-            }
-
-            gHandle.DrawImage(Brain.canvas, new Point(0, 0));
-        }
 
         public void Rethink()
         {
@@ -934,7 +973,7 @@ namespace BuzzNet
             SaveSnapshot();
         }
 
-        private void MatrixToImage(Matrix<double> m, ref Bitmap image)
+        public static void MatrixToImage(Matrix<double> m, ref Bitmap image)
         {
             IEnumerable<Tuple<int, int, double>> e = m.EnumerateIndexed();
             foreach (Tuple<int, int, double> t in e)
@@ -960,7 +999,7 @@ namespace BuzzNet
             }
         }
 
-        private Matrix<double> ImageToMatrix(Bitmap image)
+        public static Matrix<double> ImageToMatrix(Bitmap image)
         {
             Matrix<double> matrix = Matrix<double>.Build.Dense(NEURONS, 1);
             for (int x = 0; x < TILE_SIZE; x++)
@@ -1012,29 +1051,36 @@ namespace BuzzNet
                             {
                                 lock (brainLock)
                                 {
-                                    using (Graphics g = Graphics.FromImage(guiInput))
-                                    {
-                                        g.DrawImage(image, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(randR * TILE_SIZE, randC * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
-                                    }
-                                    using (Graphics g = Graphics.FromImage(guiExpected))
-                                    {
-                                        g.DrawImage(expImage, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(randR * TILE_SIZE, randC * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
-                                    }
+                                    BrainGUI.Apply(randR, randC, image, expImage);
                                 }
-                            }
-                            using (Graphics g = Graphics.FromImage(trainIn))
-                            {
-                                g.DrawImage(image, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(randR * TILE_SIZE, randC * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
-                            }
-                            using (Graphics g = Graphics.FromImage(trainExp))
-                            {
-                                g.DrawImage(expImage, new Rectangle(0, 0, TILE_SIZE, TILE_SIZE), new Rectangle(randR * TILE_SIZE, randC * TILE_SIZE, TILE_SIZE, TILE_SIZE), GraphicsUnit.Pixel);
                             }
                         }
 
-                        Matrix<double> inputMatrix = ImageToMatrix(trainIn); // this is the original gray image
-                        Matrix<double> expectedMatrix = ImageToMatrix(trainExp);
+                        string key = string.Format("{0} {1}", randR, randC);
+                        Matrix<double> inputMatrix = null;
+                        Matrix<double> expectedMatrix = null;
+                        if (!imageTileMatricies.ContainsKey(key))
+                        {
+                            using (Graphics g = Graphics.FromImage(trainIn))
+                            {
+                                g.DrawImage(image, new Rectangle(0, 0, Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize), new Rectangle(randR * Properties.Settings.Default.ImageTileSize, randC * Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize), GraphicsUnit.Pixel);
+                            }
+                            using (Graphics g = Graphics.FromImage(trainExp))
+                            {
+                                g.DrawImage(expImage, new Rectangle(0, 0, Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize), new Rectangle(randR * Properties.Settings.Default.ImageTileSize, randC * Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize, Properties.Settings.Default.ImageTileSize), GraphicsUnit.Pixel);
+                            }
 
+                            inputMatrix = ImageToMatrix(trainIn); // this is the original gray image
+                            expectedMatrix = ImageToMatrix(trainExp);
+                            imageTileMatricies[key] = inputMatrix;
+                            imageTileMatricies[string.Format("x {0}", key)] = expectedMatrix;
+                        }
+                        else
+                        {
+                            inputMatrix = imageTileMatricies[key];
+                            expectedMatrix = imageTileMatricies[string.Format("x {0}", key)];
+
+                        }
                         double tileAcc = 0.0;
                         err = cluster.Train(inputMatrix, expectedMatrix, ref tileAcc);
                         acc += tileAcc;
@@ -1051,7 +1097,7 @@ namespace BuzzNet
                             lock (brainLock)
                             {
                                 Matrix<double> res = cluster.Predict(inputMatrix);
-                                MatrixToImage(res, ref guiOutput);
+                                BrainGUI.ApplyOutputMatrix(res);
                             }
                         }
                         tile++;
@@ -1155,7 +1201,7 @@ namespace BuzzNet
                     totAcc = tileIndex > 0f ? totAcc / tileIndex : 0f;
                     using (Graphics g = Graphics.FromImage(prediction))
                     {
-                        g.DrawString(string.Format("A:{0:000.000000} S:{1:0.0000}", totAcc, cluster.metrics.Score), fontSnaptshot, (totAcc / 100.0 < Properties.Settings.Default.PositiveResult) ? Brain.brushRed : Brain.brushGreen, new Point(10, TILE_SIZE));
+                        g.DrawString(string.Format("A:{0:000.000000} S:{1:0.0000}", totAcc, cluster.metrics.Score), BrainGUI.fontSnaptshot, (totAcc / 100.0 < Properties.Settings.Default.PositiveResult) ? BrainGUI.brushRed : BrainGUI.brushGreen, new Point(10, TILE_SIZE));
                     }
 
                     string urlOutput = string.Format("{0}\\result\\{1}\\prediction_{2:0.00}.png", Properties.Settings.Default.UrlTrainingImages, timeToken, totAcc);
@@ -1190,7 +1236,7 @@ namespace BuzzNet
                 g.DrawImage(input, new Point(0, 0));
                 g.DrawImage(output, new Point(TILE_SIZE + 2, 0));
                 g.DrawImage(expected, new Point((TILE_SIZE + TILE_SIZE + 4), 0));
-                g.DrawString(string.Format("A:{0:000.000000} S:{1:0.0000}", accurary, score), SystemFonts.DefaultFont, Brain.brushGreen, new Point(0, TILE_SIZE));
+                g.DrawString(string.Format("A:{0:000.000000} S:{1:0.0000}", accurary, score), SystemFonts.DefaultFont, BrainGUI.brushGreen, new Point(0, TILE_SIZE));
             }
 
             result.Save(urlOutput, System.Drawing.Imaging.ImageFormat.Png);

@@ -30,6 +30,41 @@ using Newtonsoft.Json;
 
 namespace BuzzNet
 {
+
+    public class NeuronGUI
+    {
+        public static readonly Pen penActive = new Pen(Color.Black);
+        public static readonly Pen penInactive = new Pen(Color.DarkGray);
+        public static readonly Brush brushSignal = new SolidBrush(Color.Green) as Brush;
+        public static readonly Brush brushNoSignal = new SolidBrush(Color.Red) as Brush;
+        public static readonly Brush brushInactive = new SolidBrush(Color.LightGray) as Brush;
+
+        public static void Draw(Graphics g, Neuron n)
+        {
+            Pen pen = (n.SynapsesCount == 0 ? penInactive : penActive);
+            Brush brush = (n.SynapsesCount == 0 ? brushInactive : (n.OutSignal ? brushSignal : brushNoSignal));
+
+            g.DrawEllipse(pen, n.Position.X - (n.Radius), n.Position.Y - (n.Radius), n.Radius * 2, n.Radius * 2);
+            g.FillEllipse(brush, n.Position.X - (n.Radius), n.Position.Y - (n.Radius), n.Radius * 2, n.Radius * 2);
+
+            if (n.Layer == 0) return;
+
+            try
+            {
+                Synapse[] tmp = null;
+                tmp = new Synapse[n.Synapses.Count];
+                n.Synapses.CopyTo(tmp);
+
+                foreach (Synapse synapse in tmp)
+                {
+                    SynapseGUI.Draw(g, synapse);
+                }
+            }
+            catch (Exception) { }
+        }
+
+    }
+
     /// <summary>
     /// Summary description for Neuron.
     /// </summary>
@@ -56,12 +91,6 @@ namespace BuzzNet
 
         private bool outSignal = false;
         private double threashhold = 1.0;
-
-        private Pen penActive = new Pen(Color.Black);
-        private Pen penInactive = new Pen(Color.DarkGray);
-        private Brush brushSignal = new SolidBrush(Color.Green) as Brush;
-        private Brush brushNoSignal = new SolidBrush(Color.Red) as Brush;
-        private Brush brushInactive = new SolidBrush(Color.LightGray) as Brush;
 
         private Random rand = null;
         private int layer = -1;
@@ -265,31 +294,6 @@ namespace BuzzNet
             synapses.Clear();
             axons.Clear();
             ShutdownSynapses();
-        }
-
-
-        public void Draw(Graphics g)
-        {
-            Pen pen = (SynapsesCount == 0 ? penInactive : penActive);
-            Brush brush = (SynapsesCount == 0 ? brushInactive : (outSignal ? brushSignal : brushNoSignal));
-
-            g.DrawEllipse(pen, pos.X - (radius), pos.Y - (radius), radius * 2, radius * 2);
-            g.FillEllipse(brush, pos.X - (radius), pos.Y - (radius), radius * 2, radius * 2);
-
-            if (layer == 0) return; 
-
-            try
-            {
-                Synapse[] tmp = null;
-                tmp = new Synapse[synapses.Count];
-                synapses.CopyTo(tmp);
-
-                foreach (Synapse synapse in tmp)
-                {
-                    synapse.Draw(g);
-                }
-            }
-            catch (Exception) { }
         }
 
         public Synapse CreateSynapseConnection(ESynapsisType type, double weight)

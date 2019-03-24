@@ -168,8 +168,8 @@ namespace BuzzNet
 
         protected override void OnPaint(PaintEventArgs e)
 		{
-            if(curBrain != null)
-                curBrain.Draw(e.Graphics);
+            if (curBrain != null)
+                BrainGUI.Draw(e.Graphics, curBrain);
         }
 
 		protected override void OnPaintBackground(PaintEventArgs e)
@@ -207,6 +207,7 @@ namespace BuzzNet
         private void OnInitBrain(object sender, DoWorkEventArgs e)
         {
             Brain.Setup();
+            BrainGUI.Setup();
             brain = new Brain(this, 42, this.ClientSize.Width);
             //brain.CreateGrayMatter();
             curBrain = brain;
