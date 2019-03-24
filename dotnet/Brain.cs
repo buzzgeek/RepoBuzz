@@ -593,7 +593,7 @@ namespace BuzzNet
                         largestError = totScore;
                     }
 
-                    if ((smallestError - totScore) >= Properties.Settings.Default.RelevantScoreDelta)
+                    if (totScore > 0 && (smallestError - totScore) >= Properties.Settings.Default.RelevantScoreDelta)
                     {
                         smallestError = totScore;
                         numberOfBestScores++;
@@ -936,8 +936,9 @@ namespace BuzzNet
             comment = "training...";
 
             // set initial scores and best weights
-            cluster.metrics.Score = double.MaxValue;
-            cluster.metrics.Accuracy = 0.0;
+            //cluster.metrics.Score = double.MaxValue;
+            cluster.metrics.Score = 0d;
+            cluster.metrics.Accuracy = 0d;
             iteration = 0;
 
             while (iteration < totalNumberOfIterations && !terminate)
@@ -962,6 +963,11 @@ namespace BuzzNet
                 }
 
                 iteration++;
+                if ((iteration % Properties.Settings.Default.ChangeAfterIterations) == 0)
+                {
+                    cluster.LearningRate = cluster.LearningRate * Properties.Settings.Default.DeltaChangeBase;
+                }
+
                 double stepDuration = (DateTime.Now - cluster.metrics.prevStepDateTime).TotalSeconds;
                 cluster.metrics.prevStepDateTime = DateTime.Now;
 
@@ -1109,10 +1115,6 @@ namespace BuzzNet
                 if (expImage != null) expImage.Dispose();
 
                 inputIndex++;
-                if ((inputIndex % Properties.Settings.Default.ChangeAfterIterations) == 0)
-                {
-                    cluster.LearningRate = cluster.LearningRate * Properties.Settings.Default.DeltaChangeBase;
-                }
             }
             imageIndex = 0;
 

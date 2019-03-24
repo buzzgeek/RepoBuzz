@@ -69,7 +69,7 @@
       <Value Profile="(Default)">10000000</Value>
     </Setting>
     <Setting Name="ChangeAfterIterations" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">500</Value>
     </Setting>
     <Setting Name="DeltaChangeBase" Type="System.Double" Scope="Application">
       <Value Profile="(Default)">0.1</Value>
