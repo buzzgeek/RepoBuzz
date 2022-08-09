@@ -1,3 +1,4 @@
+//#define faulty_calculation
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -406,12 +407,12 @@ namespace BuzzNet
                     {
                         throw new ArgumentOutOfRangeException("NumberOfLayers", "The NumberOfLayers defined in the applications user settings has to be greater than 1");
                     }
-                    // ouput neuron's errors will be calculate in the ForwardPropagation function 
-                    // calculate the output neurons delta's to reduce costs/errors
+                    // neuron's energies and activations have been calculated in the ForwardPropagation function 
+                    // calculate the neurons delta's to reduce costs/errors
 
                     // activation[L] = sig(energy[L])
                     // error[L] = (activation[L] - expected)
-                    // delta[L] = error • sig'(energy[L])
+                    // delta[L] = error • sig'(energy[L]) #:hadamard product
                     Matrix<double> primeEnergy = energyMatrix[LAYERS - 1].Map(SigmoidPrime);
                     Matrix<double> derivative = null;
                     Matrix<double> tmp = null;
@@ -428,13 +429,21 @@ namespace BuzzNet
                     }
 
                     // adjust weights and biases
-
                     for (int i = LAYERS - 1; i > 0; i--)
                     {
                         // derivative[i] = delta[i] * activation[i-1]T
                         derivative = deltaMatrix[i].Multiply(activationMatrix[i - 1].Transpose());
+
+#if faulty_calculation
+                        // w[i] = w[i] - eta * w[i] • derivative[i] #: matrix multiplication with Hadamard product
+                        // multiplying by the weight is actually not correct - this comment will be removed at a later point in time
                         tmp = Matrix<double>.op_DotMultiply(weightMatrix[i], derivative).Multiply(lr);
-                        // w[i] = w[i] - eta * w[i] • derivative[i]
+#else
+                        // w[i] = w[i] - eta • derivative[i] #: Hadamard product
+                        // this is the correct calculation - the prediction results are impresive
+                        tmp = derivative.Multiply(lr);
+#endif
+                        // w[i] = w[i] - eta • derivative[i] #: Hadamard product
                         weightMatrix[i] = weightMatrix[i].Subtract(tmp);
                         // b = b - (eta * derivative)
                         biasMatrix[i] = biasMatrix[i].Subtract(deltaMatrix[i].Multiply(lr));
@@ -477,7 +486,7 @@ namespace BuzzNet
 
             private double InitRandomWeight(double arg)
             {
-                return rand.NextDouble() - 0.5; // values -.5 to .5
+                return (rand.NextDouble() - 0.5f) * Properties.Settings.Default.RandomWeightModifier;
             }
 
             #endregion private methods
@@ -529,7 +538,7 @@ namespace BuzzNet
                 return res;
             }
 
-            #endregion activation functions
+#endregion activation functions
         }
 
         public class Metrics
@@ -658,9 +667,9 @@ namespace BuzzNet
             }
         }
 
-        #endregion internal interfaces and classes
+#endregion internal interfaces and classes
 
-        #region constants
+#region constants
         private const int ORIGIN_X = 20;
         private const int ORIGIN_Y = 20;
         private const int IMG_OFFSET_X = 10;
@@ -672,9 +681,9 @@ namespace BuzzNet
 
         internal readonly long totalNumberOfIterations = Properties.Settings.Default.NumberOfIterations; internal int imageIndex = 0;
 
-        #endregion constants
+#endregion constants
 
-        #region members
+#region members
 
         private TestControl parent = null;
         public object brainLock = new object();
@@ -706,9 +715,9 @@ namespace BuzzNet
 
         private Dictionary<string, Matrix<double>> imageTileMatricies = new Dictionary<string, Matrix<double>>();
 
-        #endregion members
+#endregion members
 
-        #region properties
+#region properties
 
         public Neuron[,] BrainCells { get { return brainCells; } }
 
@@ -726,9 +735,9 @@ namespace BuzzNet
         {
             get { return NEURONS; }
         }
-        #endregion properties
+#endregion properties
 
-        #region constructor
+#region constructor
 
         public Brain(TestControl parent, int seed, int width)
         {
@@ -757,9 +766,9 @@ namespace BuzzNet
             }
         }
 
-        #endregion constructor
+#endregion constructor
 
-        #region public methods
+#region public methods
 
         public void BeforeTerminate()
         {
@@ -916,7 +925,7 @@ namespace BuzzNet
             //}
         }
 
-        #endregion public methods
+#endregion public methods
 
         private void PerformTraining()
         {
@@ -1361,7 +1370,7 @@ namespace BuzzNet
             }
         }
 
-        #region IShutdown Members
+#region IShutdown Members
 
         public void Shutdown()
         {
@@ -1377,6 +1386,6 @@ namespace BuzzNet
             }
         }
 
-        #endregion
+#endregion
     }
 }
