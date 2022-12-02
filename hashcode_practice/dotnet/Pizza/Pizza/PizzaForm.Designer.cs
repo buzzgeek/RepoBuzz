@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.pizzaCanvas1 = new PizzaCanvas();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonSlice = new System.Windows.Forms.Button();
@@ -38,11 +37,14 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.btnValidate = new System.Windows.Forms.Button();
             this.tbSeed = new System.Windows.Forms.TextBox();
+            this.comboBoxPickOrder = new System.Windows.Forms.ComboBox();
+            this.btnExportPizza = new System.Windows.Forms.Button();
+            this.btnExportSlizes = new System.Windows.Forms.Button();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerRefresh = new System.Windows.Forms.Timer(this.components);
-            this.comboBoxPickOrder = new System.Windows.Forms.ComboBox();
+            this.pizzaCanvas1 = new Pizza.PizzaCanvas();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
@@ -54,35 +56,21 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.pizzaCanvas1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.100592F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.89941F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1037, 507);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // pizzaCanvas1
-            // 
-            this.pizzaCanvas1.AutoScroll = true;
-            this.pizzaCanvas1.AutoScrollMinSize = new System.Drawing.Size(8000, 8000);
-            this.pizzaCanvas1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pizzaCanvas1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pizzaCanvas1.LoadingTime = "";
-            this.pizzaCanvas1.Location = new System.Drawing.Point(3, 39);
-            this.pizzaCanvas1.Name = "pizzaCanvas1";
-            this.pizzaCanvas1.Seed = 0;
-            this.pizzaCanvas1.Size = new System.Drawing.Size(1031, 465);
-            this.pizzaCanvas1.SlicingTime = "";
-            this.pizzaCanvas1.TabIndex = 0;
-            // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 7;
+            this.tableLayoutPanel2.ColumnCount = 9;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
@@ -90,6 +78,8 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel2.Controls.Add(this.buttonLoad, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonSlice, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonSave, 3, 0);
@@ -97,18 +87,20 @@
             this.tableLayoutPanel2.Controls.Add(this.btnValidate, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.tbSeed, 5, 0);
             this.tableLayoutPanel2.Controls.Add(this.comboBoxPickOrder, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnExportPizza, 7, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnExportSlizes, 8, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1031, 30);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1031, 34);
             this.tableLayoutPanel2.TabIndex = 1;
-            this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
             // buttonLoad
             // 
-            this.buttonLoad.Location = new System.Drawing.Point(654, 3);
+            this.buttonLoad.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonLoad.Location = new System.Drawing.Point(414, 3);
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(54, 23);
             this.buttonLoad.TabIndex = 0;
@@ -118,7 +110,8 @@
             // 
             // buttonSlice
             // 
-            this.buttonSlice.Location = new System.Drawing.Point(714, 3);
+            this.buttonSlice.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonSlice.Location = new System.Drawing.Point(474, 3);
             this.buttonSlice.Name = "buttonSlice";
             this.buttonSlice.Size = new System.Drawing.Size(54, 23);
             this.buttonSlice.TabIndex = 1;
@@ -128,7 +121,8 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(774, 3);
+            this.buttonSave.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonSave.Location = new System.Drawing.Point(534, 3);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(54, 23);
             this.buttonSave.TabIndex = 2;
@@ -148,7 +142,8 @@
             // 
             // btnValidate
             // 
-            this.btnValidate.Location = new System.Drawing.Point(834, 3);
+            this.btnValidate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnValidate.Location = new System.Drawing.Point(594, 3);
             this.btnValidate.Name = "btnValidate";
             this.btnValidate.Size = new System.Drawing.Size(54, 23);
             this.btnValidate.TabIndex = 4;
@@ -158,11 +153,48 @@
             // 
             // tbSeed
             // 
-            this.tbSeed.Location = new System.Drawing.Point(894, 3);
+            this.tbSeed.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbSeed.Location = new System.Drawing.Point(654, 3);
             this.tbSeed.Name = "tbSeed";
             this.tbSeed.Size = new System.Drawing.Size(54, 20);
             this.tbSeed.TabIndex = 5;
             this.tbSeed.Text = "0";
+            // 
+            // comboBoxPickOrder
+            // 
+            this.comboBoxPickOrder.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxPickOrder.FormattingEnabled = true;
+            this.comboBoxPickOrder.Items.AddRange(new object[] {
+            "First",
+            "Last",
+            "Random"});
+            this.comboBoxPickOrder.Location = new System.Drawing.Point(714, 3);
+            this.comboBoxPickOrder.Name = "comboBoxPickOrder";
+            this.comboBoxPickOrder.Size = new System.Drawing.Size(74, 21);
+            this.comboBoxPickOrder.TabIndex = 6;
+            this.comboBoxPickOrder.Text = "First";
+            // 
+            // btnExportPizza
+            // 
+            this.btnExportPizza.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExportPizza.Location = new System.Drawing.Point(794, 3);
+            this.btnExportPizza.Name = "btnExportPizza";
+            this.btnExportPizza.Size = new System.Drawing.Size(114, 24);
+            this.btnExportPizza.TabIndex = 7;
+            this.btnExportPizza.Text = "Export Pizza";
+            this.btnExportPizza.UseVisualStyleBackColor = true;
+            this.btnExportPizza.Click += new System.EventHandler(this.btnExportPizza_Click);
+            // 
+            // btnExportSlizes
+            // 
+            this.btnExportSlizes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExportSlizes.Location = new System.Drawing.Point(914, 3);
+            this.btnExportSlizes.Name = "btnExportSlizes";
+            this.btnExportSlizes.Size = new System.Drawing.Size(114, 24);
+            this.btnExportSlizes.TabIndex = 8;
+            this.btnExportSlizes.Text = "Export Slices";
+            this.btnExportSlizes.UseVisualStyleBackColor = true;
+            this.btnExportSlizes.Click += new System.EventHandler(this.btnExportSlices_Click);
             // 
             // toolStripContainer1
             // 
@@ -175,17 +207,12 @@
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tableLayoutPanel1);
             this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1037, 507);
-            this.toolStripContainer1.ContentPanel.Load += new System.EventHandler(this.toolStripContainer1_ContentPanel_Load);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
             this.toolStripContainer1.Size = new System.Drawing.Size(1037, 554);
             this.toolStripContainer1.TabIndex = 1;
             this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.Click += new System.EventHandler(this.toolStripContainer1_TopToolStripPanel_Click);
             // 
             // statusStrip1
             // 
@@ -208,18 +235,20 @@
             // 
             this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
             // 
-            // comboBoxPickOrder
+            // pizzaCanvas1
             // 
-            this.comboBoxPickOrder.FormattingEnabled = true;
-            this.comboBoxPickOrder.Items.AddRange(new object[] {
-            "First",
-            "Last",
-            "Random"});
-            this.comboBoxPickOrder.Location = new System.Drawing.Point(954, 3);
-            this.comboBoxPickOrder.Name = "comboBoxPickOrder";
-            this.comboBoxPickOrder.Size = new System.Drawing.Size(74, 21);
-            this.comboBoxPickOrder.TabIndex = 6;
-            this.comboBoxPickOrder.Text = "First";
+            this.pizzaCanvas1.AutoScroll = true;
+            this.pizzaCanvas1.AutoScrollMinSize = new System.Drawing.Size(8000, 8000);
+            this.pizzaCanvas1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pizzaCanvas1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pizzaCanvas1.LoadingTime = "";
+            this.pizzaCanvas1.Location = new System.Drawing.Point(3, 43);
+            this.pizzaCanvas1.Name = "pizzaCanvas1";
+            this.pizzaCanvas1.PickOrder = Pizza.PizzaPie.EPickStrategy.First;
+            this.pizzaCanvas1.Seed = 0;
+            this.pizzaCanvas1.Size = new System.Drawing.Size(1031, 465);
+            this.pizzaCanvas1.SlicingTime = "";
+            this.pizzaCanvas1.TabIndex = 0;
             // 
             // PizzaForm
             // 
@@ -229,7 +258,6 @@
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "PizzaForm";
             this.Text = "Pizza Challenge - BuzzNet";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -260,6 +288,8 @@
         private System.Windows.Forms.Button btnValidate;
         private System.Windows.Forms.TextBox tbSeed;
         private System.Windows.Forms.ComboBox comboBoxPickOrder;
+        private System.Windows.Forms.Button btnExportPizza;
+        private System.Windows.Forms.Button btnExportSlizes;
     }
 }
 

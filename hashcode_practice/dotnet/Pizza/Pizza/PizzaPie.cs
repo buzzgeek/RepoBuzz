@@ -6,9 +6,61 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 
 namespace Pizza
 {
+    public class DirectBitmap : IDisposable
+    {
+        public Bitmap Bitmap { get; private set; }
+        public Int32[] Bits { get; private set; }
+        public bool Disposed { get; private set; }
+        public int Height { get; private set; }
+        public int Width { get; private set; }
+
+        protected GCHandle BitsHandle { get; private set; }
+
+        public DirectBitmap(int width, int height)
+        {
+            Width = width;
+            Height = height;
+            Bits = new Int32[width * height];
+            Array.Clear(Bits, 0, Bits.Length);
+            BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
+            Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
+        }
+
+        public void SetPixel(int x, int y, Color colour)
+        {
+            int index = x + (y * Width);
+            int col = colour.ToArgb();
+
+            if (index >= Bits.Length)
+                return;
+
+            Bits[index] = col;
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            int index = x + (y * Width);
+            int col = Bits[index];
+            Color result = Color.FromArgb(col);
+
+            return result;
+        }
+
+        public void Dispose()
+        {
+            if (Disposed) return;
+            Disposed = true;
+            Bitmap.Dispose();
+            BitsHandle.Free();
+        }
+    }
+
     public enum eDirection
     {
         Up = 0,
@@ -25,13 +77,14 @@ namespace Pizza
         private HashSet<Slice> possibleSlices = new HashSet<Slice>();
         private bool allocated = false;
         private bool processed = false;
+        private int sliceId = -1;
 
-        public Tile(int row, int column, Ingredient ingredient)
+        public Tile(int row, int column, Ingredient ingredient, int sliceId)
         {
             this.row = row;
             this.column = column;
             this.ingredient = ingredient;
-
+            this.sliceId = sliceId;
         }
         public override string ToString()
         {
@@ -54,6 +107,12 @@ namespace Pizza
         }
 
         public HashSet<Slice> PossibleSlices { get { return possibleSlices; } }
+
+        public int SliceId 
+        { 
+            get { return sliceId; } 
+            set { sliceId = value; } 
+        }
     }
 
     public enum Ingredient
@@ -66,32 +125,37 @@ namespace Pizza
 
     public class Slice
     {
+        private int id = -1;
         private Tile origin = null;
         private int rows = 0;
         private int columns = 0;
         private HashSet<Tile> tiles = new HashSet<Tile>();
 
+        public int Id { get { return id; } }
         public Tile Origin { get { return origin; } }
         public int Rows { get { return rows; } }
         public int Columns { get { return columns; } }
         public HashSet<Tile> Tiles { get { return tiles; } }
 
-        public Slice(Tile origin, int rows, int columns)
+        public Slice(int id, Tile origin, int rows, int columns)
         {
+            this.id = id;   
             this.origin = origin;
             this.rows = rows;
             this.columns = columns;
         }
 
-        public Slice(Tile origin, Slice slice)
+        public Slice(int id, Tile origin, Slice slice)
         {
+            this.id = id;
             this.origin = origin;
             this.rows = slice.rows;
             this.columns = slice.columns;
         }
 
-        public Slice(int rows, int columns)
+        public Slice(int id, int rows, int columns)
         {
+            this.id = id;
             this.origin = null;
             this.rows = rows;
             this.columns = columns;
@@ -111,6 +175,8 @@ namespace Pizza
         int Columns { get; }
         IList<Slice> Slices { get; }
         void Load(string urlPizza);
+        void ExportPizzaAsImg(string urlPizzaImg);
+        void ExportSlizedPizzaAsImg(string urlPizzaImg);
         void SaveResult(string urlResult);
         void Slice();
         void ValidateResult(string urlResult);
@@ -141,6 +207,16 @@ namespace Pizza
 
     public class PizzaPie : IPizza
     {
+        private Color[] sliceColors = new Color[] { Color.Blue,
+            Color.Red,
+            Color.Yellow,
+            Color.Green,
+            Color.Orange,
+            Color.Turquoise,
+            Color.Indigo,
+            Color.HotPink,
+            Color.Purple };
+
         public enum EPickStrategy
         {
             First,
@@ -161,6 +237,7 @@ namespace Pizza
         private int loadedTiles = 0;
         private int allocatedTiles = 0;
         private int progress = 0;
+        private int numOfSlices = 0;
         Random rnd = null;
 
         public int MinimumTilesPerIngredient { get { return minimumTilesPerIngredient; } }
@@ -200,6 +277,7 @@ namespace Pizza
             loadedTiles = 0;
             missedTiles = 0;
             allocatedTiles = 0;
+            numOfSlices = 0;
             allTiles.Clear();
             LoadTiles(urlPizza);
             CreateListOfValidShapes(true, true);
@@ -221,7 +299,7 @@ namespace Pizza
                 tiles.Add(new List<Tile>());
                 for (int c = 0; c < columns; c++)
                 {
-                    Tile tile = new Tile(r, c, Ingredient.Unknown);
+                    Tile tile = new Tile(r, c, Ingredient.Unknown, -1);
                     tiles[r].Add(tile);           
                 }
             }
@@ -229,12 +307,13 @@ namespace Pizza
             string[] lines = File.ReadAllLines(urlResult);
 
             int numSlices = int.Parse(lines[0]);
+            int sliceId = 0;
 
             for (int i = 1; i < lines.Length; i++)
             {
                 string[] s = lines[i].Split(' ');
-                Tile origin = new Tile(int.Parse(s[0]), int.Parse(s[1]), Ingredient.Something);
-                Slice slice = new Slice(origin, int.Parse(s[2]) - origin.Row, int.Parse(s[3]) - origin.Column);
+                Tile origin = new Tile(int.Parse(s[0]), int.Parse(s[1]), Ingredient.Something, -1);
+                Slice slice = new Slice(sliceId, origin, int.Parse(s[2]) - origin.Row, int.Parse(s[3]) - origin.Column);
                 slices.Add(slice);
                 for(int r = 0; r <= slice.Rows; r++)
                 {
@@ -245,7 +324,9 @@ namespace Pizza
 
                         tiles[slice.Origin.Row + r][slice.Origin.Column + c].Allocated = false;
                         tiles[slice.Origin.Row + r][slice.Origin.Column + c].Topping = Ingredient.Something;
+                        tiles[slice.Origin.Row + r][slice.Origin.Column + c].SliceId = -1;
                     }
+                    sliceId++;
                 }
             }
 
@@ -268,13 +349,14 @@ namespace Pizza
                     tile.PossibleSlices.Clear();
                 }
 
+                int sliceId = 0;
                 foreach (Tile tile in allTiles)
                 {
                     foreach (Slice s in possibleShapes.Values)
                     {
                         if (IsValidShape(s, tile))
                         {
-                            Slice slice = new Slice(tile, s);
+                            Slice slice = new Slice(sliceId++, tile, s);
                             for (int r = 0; r < s.Rows; r++)
                             {
                                 for (int c = 0; c < s.Columns; c++)
@@ -309,6 +391,7 @@ namespace Pizza
 
         private void CreateListOfValidShapes(bool generateLines, bool generateSquares)
         {
+            int sliceId = 0;
             // lines
             if (generateLines)
             {
@@ -326,14 +409,14 @@ namespace Pizza
 
                             if (!possibleShapes.ContainsKey(key))
                             {
-                                possibleShapes[key] = new Slice(r, c);
+                                possibleShapes[key] = new Slice(sliceId++, r, c);
                             }
                             if (r != c)
                             {
                                 key = string.Format("{0} {1}", c, r);
                                 if (!possibleShapes.ContainsKey(key))
                                 {
-                                    possibleShapes[key] = new Slice(c, r);
+                                    possibleShapes[key] = new Slice(sliceId++, c, r);
                                 }
                             }
                         }
@@ -357,14 +440,14 @@ namespace Pizza
 
                             if (!possibleShapes.ContainsKey(key))
                             {
-                                possibleShapes[key] = new Slice(r, c);
+                                possibleShapes[key] = new Slice(sliceId++, r, c);
                             }
                             if (r != c)
                             {
                                 key = string.Format("{0} {1}", c, r);
                                 if (!possibleShapes.ContainsKey(key))
                                 {
-                                    possibleShapes[key] = new Slice(c, r);
+                                    possibleShapes[key] = new Slice(sliceId++, c, r);
                                 }
                             }
                         }
@@ -400,10 +483,10 @@ namespace Pizza
                         switch (ingredient)
                         {
                             case 'T':
-                                tile = new Tile(rowIndex, colIndex, Ingredient.Tomato);
+                                tile = new Tile(rowIndex, colIndex, Ingredient.Tomato, -1);
                                 break;
                             case 'M':
-                                tile = new Tile(rowIndex, colIndex, Ingredient.Mushroom);
+                                tile = new Tile(rowIndex, colIndex, Ingredient.Mushroom, -1);
                                 break;
                             default:
                                 // nothing to do for now
@@ -463,6 +546,7 @@ namespace Pizza
             bool isDone = false;
 
             progress = 0;
+            int sliceId = 0;
             while (!isDone)
             {
                 Tile tile = LocateAvailableTile(PickOrder);
@@ -476,7 +560,7 @@ namespace Pizza
 
                 if (slice != null)
                 {
-                    Slice s = new Slice(tile, slice);
+                    Slice s = new Slice(sliceId++, tile, slice);
                     CutPizza(s);
                     RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Sliced, slice));
                 }
@@ -520,6 +604,8 @@ namespace Pizza
                 {
                     tiles[slice.Origin.Row + r][c + slice.Origin.Column].Allocated = true;
                     tiles[slice.Origin.Row + r][c + slice.Origin.Column].Processed = true;
+                    tiles[slice.Origin.Row + r][slice.Origin.Column + c].SliceId = slice.Id;
+
                     string key = string.Format("{0:0000} {1:0000}", slice.Origin.Row + r, c + slice.Origin.Column);
                     if (sortedTiles.ContainsKey(key)) sortedTiles.Remove(key); 
                 }
@@ -596,6 +682,75 @@ namespace Pizza
                 }
             }
             return (mushrooms >= minimumTilesPerIngredient && tomatos >= minimumTilesPerIngredient);
+        }
+
+        public void ExportPizzaAsImg(string urlPizzaImg)
+        {
+            try
+            {
+                using (DirectBitmap pizzaImage = new DirectBitmap(Columns, Rows))
+                {
+
+                    foreach (var tileRow in Tiles)
+                    {
+                        foreach (var tile in tileRow)
+                        {
+                            switch (tile.Topping)
+                            {
+                                case Ingredient.Tomato:
+                                    pizzaImage.SetPixel(tile.Column, tile.Row, Color.Red);
+                                    break;
+                                case Ingredient.Mushroom:
+                                    pizzaImage.SetPixel(tile.Column, tile.Row, Color.Blue);
+                                    break;
+                                default:
+                                    pizzaImage.SetPixel(tile.Column, tile.Row, Color.Green);
+                                    break;
+                            }
+                       }
+                    }
+
+                    pizzaImage.Bitmap.Save(urlPizzaImg, ImageFormat.Bmp);
+                    RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Done, null));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
+        }
+
+        public void ExportSlizedPizzaAsImg(string urlSlizedPizzaImg)
+        {
+            try
+            {
+                using (DirectBitmap pizzaSliceImage = new DirectBitmap(Columns, Rows))
+                {
+                    foreach (var slice in Slices)
+                    {
+                        for (int r = 0; r < slice.Rows; r++)
+                        {
+                            for (int c = 0; c < slice.Columns; c++)
+                            {
+                                try
+                                {
+                                    pizzaSliceImage.SetPixel(slice.Origin.Column + c, slice.Origin.Row + r, sliceColors[slice.Id % sliceColors.Length]);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Error.WriteLine(ex);
+                                }
+                            }
+                        }
+                    }
+                    pizzaSliceImage.Bitmap.Save(urlSlizedPizzaImg, ImageFormat.Bmp);
+                    RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Done, null));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
         }
     }
 }

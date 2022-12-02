@@ -13,14 +13,22 @@ namespace Pizza
 {
     public partial class PizzaCanvas : UserControl
     {
-        private Brush mushroomBrush = Brushes.Teal;
-        private Brush tomatoBrush = Brushes.Tan;
-        private Brush unknownBrush = Brushes.Black;
+        private Brush mushroomBrush = Brushes.Black;
+        private Brush tomatoBrush = Brushes.White;
+        private Brush unknownBrush = Brushes.LightPink;
         private Brush somethingBrush = Brushes.LightBlue;
 
+        private Brush []sliceBrushes = new Brush[] { Brushes.Blue, 
+            Brushes.Red, 
+            Brushes.Yellow, 
+            Brushes.Green, 
+            Brushes.Orange, 
+            Brushes.Turquoise, 
+            Brushes.Indigo,
+            Brushes.HotPink,
+            Brushes.Purple };
+
         private PizzaPie pizza = new PizzaPie();
-        private string urlPizza = Properties.Settings.Default.UrlPizza;
-        private string urlResult = Properties.Settings.Default.UrlResult;
         private int tileSize = 20;
         private bool isLoaded = false;
         private bool isValidated = false;
@@ -158,13 +166,19 @@ namespace Pizza
                 for (int c = 0; c < colMax; c++)
                 {
                     brush = Brushes.Wheat;
+                    int x = c * tileSize;
+                    int y = r * tileSize;
+                    int relativeR = 0;
+                    int relativeC = 0;
+                    int sliceId = -1;
 
                     if ( (isLoaded || isValidated) && 
                         (r + rowOffset < pizza.Rows) &&
                         (c + colOffset < pizza.Columns))
                     { 
-                        int relativeR = (r + rowOffset) < pizza.Rows ? (r + rowOffset) : pizza.Rows - 1;
-                        int relativeC = (c + colOffset) < pizza.Columns ? (c + colOffset) : pizza.Columns - 1;
+                        relativeR = (r + rowOffset) < pizza.Rows ? (r + rowOffset) : pizza.Rows - 1;
+                        relativeC = (c + colOffset) < pizza.Columns ? (c + colOffset) : pizza.Columns - 1;
+                        sliceId = pizza.Tiles[relativeR][relativeC].SliceId;
                         if (!pizza.Tiles[relativeR][relativeC].Allocated)
                         {
                             switch (pizza.Tiles[relativeR][relativeC].Topping)
@@ -176,19 +190,33 @@ namespace Pizza
                                     brush = tomatoBrush;
                                     break;
                                 case Ingredient.Unknown:
-                                    brush = unknownBrush;
-                                    break;
                                 case Ingredient.Something:
-                                    brush = somethingBrush;
+                                    brush = unknownBrush;
                                     break;
                                 default:
                                     break;
                             }
                         }
+                        else
+                        {
+                            if (sliceId > -1)
+                                brush = sliceBrushes[sliceId % sliceBrushes.Length];
+                            else
+                                brush = somethingBrush;
+                        }
+
+                        if (sliceId != pizza.Tiles[relativeR][(relativeC + 1) % pizza.Columns].SliceId)
+                        {
+                            e.Graphics.DrawLine(Pens.Black, new Point(x + tileSize, y), new Point(x + tileSize, y + tileSize));
+                        }
+                        if (sliceId != pizza.Tiles[(relativeR + 1) % pizza.Rows][relativeC].SliceId)
+                        {
+                            e.Graphics.DrawLine(Pens.Black, new Point(x, y + tileSize), new Point(x + tileSize, y + tileSize));
+                        }
+
                     }
-                    int x = c * tileSize;
-                    int y = r * tileSize;
-                    e.Graphics.FillRectangle(brush, new Rectangle(x, y, tileSize, tileSize));
+                    e.Graphics.FillRectangle(brush, new Rectangle(x+1, y+1, tileSize-1, tileSize-1));
+
                 }
             }
         }

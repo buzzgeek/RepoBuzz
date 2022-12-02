@@ -20,27 +20,23 @@ namespace Pizza
         {
             InitializeComponent();
             timerRefresh.Start();
-            //pizzaCanvas1.Pizza.PizzaEvents += Pizza_PizzaEvents;
-        }
-        
-        private void toolStripContainer1_TopToolStripPanel_Click(object sender, EventArgs e)
-        {
-
+            pizzaCanvas1.Pizza.PizzaEvents += Pizza_PizzaEvents;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Pizza_PizzaEvents(object sender, PizzEventArgs e)
         {
-
-        }
-
-        private void toolStripContainer1_ContentPanel_Load(object sender, EventArgs e)
-        {
-
+            switch (e.PizzaEvent)
+            {
+                case PizzaEvent.Loaded:
+                case PizzaEvent.Validated:
+                case PizzaEvent.Done:
+                    MessageBox.Show("Task Complete", "Note", MessageBoxButtons.OK);
+                    break;
+            }
         }
 
         private void buttonLoad_Click(object sender, EventArgs e)
         {
-
             int seed = 0;
             int.TryParse(tbSeed.Text, out seed);
             pizzaCanvas1.Seed = seed;
@@ -54,7 +50,7 @@ namespace Pizza
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.InitialDirectory = Properties.Settings.Default.UrlPizza;
+                openFileDialog.InitialDirectory = Properties.Settings.Default.UrlDataDirectory;
                 openFileDialog.Filter = "in files (*.in)|*.in";
                 openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;
@@ -65,14 +61,16 @@ namespace Pizza
                     filePath = openFileDialog.FileName;
                     Properties.Settings.Default.UrlPizza = filePath;
                     Properties.Settings.Default.Save();
-                    new Task(() => { this.pizzaCanvas1.LoadPizza(filePath); }).Start();
+                    var t = new Task(() => { this.pizzaCanvas1.LoadPizza(filePath); });
+                    t.Start();
                 }
             }
         }
 
         private void buttonSlice_Click(object sender, EventArgs e)
         {
-            new Task(() => { this.pizzaCanvas1.SlicePizza(); }).Start();
+            var t = new Task(() => { this.pizzaCanvas1.SlicePizza(); });
+            t.Start();
         }
 
         private void timerRefresh_Tick(object sender, EventArgs e)
@@ -102,7 +100,7 @@ namespace Pizza
 
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                saveFileDialog.InitialDirectory = Properties.Settings.Default.UrlPizza;
+                saveFileDialog.InitialDirectory = Properties.Settings.Default.UrlDataDirectory;
                 saveFileDialog.Filter = "out files (*.out)|*.out";
                 saveFileDialog.FilterIndex = 2;
                 saveFileDialog.RestoreDirectory = true;
@@ -125,7 +123,7 @@ namespace Pizza
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.InitialDirectory = Properties.Settings.Default.UrlPizza;
+                openFileDialog.InitialDirectory = Properties.Settings.Default.UrlDataDirectory;
                 openFileDialog.Filter = "out files (*.out)|*.out";
                 openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;
@@ -141,9 +139,53 @@ namespace Pizza
             }
         }
 
-        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        private void btnExportPizza_Click(object sender, EventArgs e)
         {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
 
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = Properties.Settings.Default.UrlDataDirectory;
+                saveFileDialog.Filter = "png files (*.bmp)|*.bmp";
+                saveFileDialog.FilterIndex = 2;
+                saveFileDialog.RestoreDirectory = true;
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = saveFileDialog.FileName;
+                    Properties.Settings.Default.UrlPizzaImg = filePath;
+                    Properties.Settings.Default.Save();
+                    var t = new Task(() => { this.pizzaCanvas1.Pizza.ExportPizzaAsImg(filePath); });
+                    t.Start();
+
+                }
+            }
+        }
+
+        private void btnExportSlices_Click(object sender, EventArgs e)
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = Properties.Settings.Default.UrlDataDirectory;
+                saveFileDialog.Filter = "save files (*.bmp)|*.bmp";
+                saveFileDialog.FilterIndex = 2;
+                saveFileDialog.RestoreDirectory = true;
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = saveFileDialog.FileName;
+                    Properties.Settings.Default.UrlSlicedPizzaImg = filePath;
+                    Properties.Settings.Default.Save();
+                    var t = new Task(() => { this.pizzaCanvas1.Pizza.ExportSlizedPizzaAsImg(filePath); });
+                    t.Start();
+                }
+            }
         }
     }
 }

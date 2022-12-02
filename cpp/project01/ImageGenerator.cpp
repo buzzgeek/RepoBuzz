@@ -83,13 +83,14 @@ ImageGenerator::Process()
 	for( i = 0; i < data.steps; i++){
 		for(y = 0; y < h; y++){
 			for( x = 0; x < w; x++){
-				xm = ((x+w+w)-1)%w;
-				xp = ((x+w)+1)%w;
-				ym = ((y+h+h)-1)%h;
-				yp = ((y+h)+1)%h;
+				xm = ((x+w+w)-1)%w; // trick to wrap around x coordinate
+				xp = ((x+w)+1)%w; // same other direction
+				ym = ((y+h+h)-1)%h; // ...
+				yp = ((y+h)+1)%h; // ...
 
 				r = g = b = tr = tg = tb = 0;
 
+				// read in colors from neighbouring pixels
 				color[0][0] = mMap[iMap][xm][ym]; 
 				color[0][1] = mMap[iMap][xm][y]; 
 				color[0][2] = mMap[iMap][xm][yp]; 
@@ -100,6 +101,7 @@ ImageGenerator::Process()
 				color[2][1] = mMap[iMap][xp][y]; 
 				color[2][2] = mMap[iMap][xp][yp]; 
 
+				// some up the color channels
 				for( ix = 0; ix < 3; ix++){
 					for( iy = 0; iy < 3; iy++){
 						tr += GetRValue(color[ix][iy]); 
@@ -108,10 +110,13 @@ ImageGenerator::Process()
 					}
 				}
 
+				// assignment not necessary but our new rgb raw values are the previously 
+				// calculated totals, eg. could have used t variables directly for further processing
 				r = tr;
 				g = tg;
 				b = tb;
 
+				// the magic happens
 				Calculate( r, g, b);
 
 				mMap[(iMap + 3)%2][x][y] = RGB(r,g,b);
@@ -202,7 +207,7 @@ ImageGenerator::Calculate(int &r, int &g, int &b)
 	dg = (double) g;
 	db = (double) b;
 
-	// addaptation
+	// adaptation
 	if( data.adaptation[0] != 0 )
 		dr += data.adaptation[0]*(rand()%20);
 	if( data.adaptation[1] != 0 )
@@ -218,6 +223,8 @@ ImageGenerator::Calculate(int &r, int &g, int &b)
 	if( data.domination[2] != 0 )
 		(b>r && b>g)?(db+=data.domination[2]):(db-=data.domination[2]);
 	
+	// the 2000 and 250 seem to be an arbtirary values
+	// not that rgb can be well above 255 cos we use total numbers
 	// death
 	if(data.death[0] != 0)
 		(r>2000 && b<250 && g<250)?(dr-=data.death[0]):(dr+=data.death[0]);
@@ -258,10 +265,17 @@ ImageGenerator::Calculate(int &r, int &g, int &b)
 			break;
 	}
 
+	// wtf was i thinking?? but cool
+
+	// bit shifting by 8 bits, dunno why i did this, it is equiv with a devision by 8
+	// bit shifting is fast
+	// i quess the numbers gets to large and i am only interested changed information
 	r = (int)dr>>3;
 	g = (int)dg>>3;
 	b = (int)db>>3;
 
+	// turn the rgb values into valid range 
+	// could have used mod operator as well
 	r<0?r=0:r;
 	r>255?r=255:r;
 	b<0?b=0:b;

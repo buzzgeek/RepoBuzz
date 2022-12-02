@@ -151,7 +151,7 @@ namespace BuzzNet.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public int ImageTileSize {
             get {
                 return ((int)(this["ImageTileSize"]));
@@ -196,7 +196,7 @@ namespace BuzzNet.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.55")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.85")]
         public double PositiveResult {
             get {
                 return ((double)(this["PositiveResult"]));

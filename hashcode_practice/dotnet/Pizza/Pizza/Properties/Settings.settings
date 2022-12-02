@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="UrlPizza" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\dev\source\hashcode\data\c_medium.in</Value>
+      <Value Profile="(Default)">C:\data\pizza\c_medium.in</Value>
     </Setting>
     <Setting Name="UrlResult" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\dev\source\hashcode\data\c_medium.out</Value>
+      <Value Profile="(Default)">C:\data\pizza\c_medium.out</Value>
     </Setting>
     <Setting Name="ReversePossibleShapes" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -16,6 +16,15 @@
     </Setting>
     <Setting Name="CutDistinctSlices" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UrlPizzaImg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\data\pizza\pizza.png</Value>
+    </Setting>
+    <Setting Name="UrlSlicedPizzaImg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\data\pizza\slicedPizza.png</Value>
+    </Setting>
+    <Setting Name="UrlDataDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\data\pizza</Value>
     </Setting>
   </Settings>
 </SettingsFile>
