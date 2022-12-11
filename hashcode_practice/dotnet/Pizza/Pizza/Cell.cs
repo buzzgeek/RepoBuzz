@@ -79,7 +79,7 @@ namespace Pizza
             Content = content;
             IndexOrder = -1;
             Status = ECellStatus.inactive;
-            Strategy = EOrganismStrategy._1x12;
+            Strategy = EOrganismStrategy._12x1;
             this.cellMap = cellMap;
             PatternMap = patternMap;
             Reset();
@@ -174,7 +174,7 @@ namespace Pizza
                         Size = 1;
                         if (Strategy == EOrganismStrategy.none)
                         {
-                            Strategy = EOrganismStrategy._1x12; // select the first available strategy
+                            Strategy = EOrganismStrategy._12x1; // select the first available strategy
                         }
                         Status = ECellStatus.active; // become active
                     }
@@ -229,15 +229,6 @@ namespace Pizza
                         // reset the global properties    
                         switch (Strategy)
                         {
-                            case EOrganismStrategy._1x12:
-                                Strategy = EOrganismStrategy._1x13;
-                                break;
-                            case EOrganismStrategy._1x13:
-                                Strategy = EOrganismStrategy._1x14;
-                                break;
-                            case EOrganismStrategy._1x14:
-                                Strategy = EOrganismStrategy._12x1;
-                                break;
                             case EOrganismStrategy._12x1:
                                 Strategy = EOrganismStrategy._13x1;
                                 break;
@@ -262,10 +253,19 @@ namespace Pizza
                             case EOrganismStrategy._3x4:
                                 Strategy = EOrganismStrategy._4x3;
                                 break;
-                            case EOrganismStrategy._4x3: // this was the last availble strategy
+                            case EOrganismStrategy._4x3:
+                                Strategy = EOrganismStrategy._1x12;
+                                break;
+                            case EOrganismStrategy._1x12:
+                                Strategy = EOrganismStrategy._1x13;
+                                break;
+                            case EOrganismStrategy._1x13:
+                                Strategy = EOrganismStrategy._1x14;
+                                break;
+                            case EOrganismStrategy._1x14:
                                 Strategy = EOrganismStrategy.none; // no more available strategies
                                 Status = ECellStatus.dead; // this cell/organsim cannot exist
-                                return;
+                                return; // note the return here
                             default:
                                 Status = ECellStatus.inactive;
                                 Strategy = EOrganismStrategy.none;
