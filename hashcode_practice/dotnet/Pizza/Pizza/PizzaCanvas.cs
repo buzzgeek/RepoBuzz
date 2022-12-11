@@ -32,7 +32,10 @@ namespace Pizza
             Brushes.RoyalBlue,
             Brushes.MistyRose,
             Brushes.Brown,
-            Brushes.Blue,
+            Brushes.Magenta,
+            Brushes.Maroon,
+            Brushes.Gray,
+            Brushes.Gainsboro, // WTF is gainsboro
         };
 
         private IPizza pizza = new CellularPizza();

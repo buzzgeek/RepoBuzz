@@ -242,9 +242,9 @@ namespace Pizza
         private SortedDictionary<string, Tile> sortedTiles = new SortedDictionary<string, Tile>();
         private List<Slice> slices = new List<Slice>();
         private Dictionary<string, Slice> possibleShapes = new Dictionary<string, Slice>();
-        private int missedTiles = 0;
+        protected int missedTiles = 0;
         private int loadedTiles = 0;
-        private int allocatedTiles = 0;
+        protected int allocatedTiles = 0;
         private int progress = 0;
         Random rnd = null;
 

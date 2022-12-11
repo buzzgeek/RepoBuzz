@@ -117,6 +117,8 @@ namespace Pizza
         {
             // keep slicing as long there are active cells
             IList<Cell> removeCells = new List<Cell>();
+
+            int sliceId = 0;
             while (activeCells.Count > 0)
             {
                 Cell first = activeCells.First();
@@ -147,7 +149,6 @@ namespace Pizza
                     if (cell.Position.R > first.Position.R + 14)
                         continue;
 
-                    //Cell cell = cellMap[first.Position.X + x][first.Position.Y + y];
                     cell.LifeCycle();
 
                     // update the tile map to reflect the "slices"
@@ -159,7 +160,6 @@ namespace Pizza
                     switch (cell.Status)
                     {
                         case ECellStatus.active:
-//                            Tiles[cell.Position.R][cell.Position.C].Allocated = true;
                             Tiles[cell.Position.R][cell.Position.C].Processed = true;
                             Tiles[cell.Position.R][cell.Position.C].SliceId = cell.OrganismId;
                             break;
@@ -172,12 +172,58 @@ namespace Pizza
                         case ECellStatus.valid:
                             Tiles[cell.Position.R][cell.Position.C].Allocated = true;
                             Tiles[cell.Position.R][cell.Position.C].Processed = true;
-                            Tiles[cell.Position.R][cell.Position.C].SliceId = cell.OrganismId;
+                            Tiles[cell.Position.R][cell.Position.C].SliceId = sliceId;
+                            allocatedTiles++;
                             removeCells.Add(cell);
                             if (cell.OrganismId == cell.Id)
+                            {
+                                switch (cell.Strategy)
+                                {
+                                    case EOrganismStrategy._14x1:
+                                        Slices.Add(new Pizza.Slice(sliceId, 14, 1));
+                                        break;
+                                    case EOrganismStrategy._13x1:
+                                        Slices.Add(new Pizza.Slice(sliceId, 13, 1));
+                                        break;
+                                    case EOrganismStrategy._12x1:
+                                        Slices.Add(new Pizza.Slice(sliceId, 12, 1));
+                                        break;
+                                    case EOrganismStrategy._1x12:
+                                        Slices.Add(new Pizza.Slice(sliceId, 1, 12));
+                                        break;
+                                    case EOrganismStrategy._1x13:
+                                        Slices.Add(new Pizza.Slice(sliceId, 1, 13));
+                                        break;
+                                    case EOrganismStrategy._1x14:
+                                        Slices.Add(new Pizza.Slice(sliceId, 1, 14));
+                                        break;
+                                    case EOrganismStrategy._2x6:
+                                        Slices.Add(new Pizza.Slice(sliceId, 2, 6));
+                                        break;
+                                    case EOrganismStrategy._2x7:
+                                        Slices.Add(new Pizza.Slice(sliceId, 2, 7));
+                                        break;
+                                    case EOrganismStrategy._7x2:
+                                        Slices.Add(new Pizza.Slice(sliceId, 7, 2));
+                                        break;
+                                    case EOrganismStrategy._6x2:
+                                        Slices.Add(new Pizza.Slice(sliceId, 6, 2));
+                                        break;
+                                    case EOrganismStrategy._4x3:
+                                        Slices.Add(new Pizza.Slice(sliceId, 4, 3));
+                                        break;
+                                    default:
+                                        Debug.Assert(false, "this should not happen");
+                                        break;
+                                }
+
+                                sliceId++;
                                 exitLoop = true;
+                            }
+
                             break;
                         case ECellStatus.dead:
+                            missedTiles++;
                             removeCells.Add(cell);
                             exitLoop = true;
                             break;
