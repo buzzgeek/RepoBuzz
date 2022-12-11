@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pizzaCanvas1 = new Pizza.PizzaCanvas();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonSlice = new System.Windows.Forms.Button();
@@ -44,7 +45,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerRefresh = new System.Windows.Forms.Timer(this.components);
-            this.pizzaCanvas1 = new Pizza.PizzaCanvas();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
@@ -67,6 +67,21 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1037, 507);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // pizzaCanvas1
+            // 
+            this.pizzaCanvas1.AutoScroll = true;
+            this.pizzaCanvas1.AutoScrollMinSize = new System.Drawing.Size(20000, 20000);
+            this.pizzaCanvas1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pizzaCanvas1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pizzaCanvas1.LoadingTime = "";
+            this.pizzaCanvas1.Location = new System.Drawing.Point(3, 43);
+            this.pizzaCanvas1.Name = "pizzaCanvas1";
+            this.pizzaCanvas1.PickOrder = Pizza.EPickStrategy.First;
+            this.pizzaCanvas1.Seed = 0;
+            this.pizzaCanvas1.Size = new System.Drawing.Size(1031, 465);
+            this.pizzaCanvas1.SlicingTime = "";
+            this.pizzaCanvas1.TabIndex = 0;
             // 
             // tableLayoutPanel2
             // 
@@ -102,7 +117,7 @@
             this.buttonLoad.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonLoad.Location = new System.Drawing.Point(414, 3);
             this.buttonLoad.Name = "buttonLoad";
-            this.buttonLoad.Size = new System.Drawing.Size(54, 23);
+            this.buttonLoad.Size = new System.Drawing.Size(54, 28);
             this.buttonLoad.TabIndex = 0;
             this.buttonLoad.Text = "Load";
             this.buttonLoad.UseVisualStyleBackColor = true;
@@ -113,7 +128,7 @@
             this.buttonSlice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonSlice.Location = new System.Drawing.Point(474, 3);
             this.buttonSlice.Name = "buttonSlice";
-            this.buttonSlice.Size = new System.Drawing.Size(54, 23);
+            this.buttonSlice.Size = new System.Drawing.Size(54, 28);
             this.buttonSlice.TabIndex = 1;
             this.buttonSlice.Text = "Slice";
             this.buttonSlice.UseVisualStyleBackColor = true;
@@ -124,7 +139,7 @@
             this.buttonSave.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonSave.Location = new System.Drawing.Point(534, 3);
             this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(54, 23);
+            this.buttonSave.Size = new System.Drawing.Size(54, 28);
             this.buttonSave.TabIndex = 2;
             this.buttonSave.Text = "Save";
             this.buttonSave.UseVisualStyleBackColor = true;
@@ -145,7 +160,7 @@
             this.btnValidate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnValidate.Location = new System.Drawing.Point(594, 3);
             this.btnValidate.Name = "btnValidate";
-            this.btnValidate.Size = new System.Drawing.Size(54, 23);
+            this.btnValidate.Size = new System.Drawing.Size(54, 28);
             this.btnValidate.TabIndex = 4;
             this.btnValidate.Text = "Validate";
             this.btnValidate.UseVisualStyleBackColor = true;
@@ -179,7 +194,7 @@
             this.btnExportPizza.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnExportPizza.Location = new System.Drawing.Point(794, 3);
             this.btnExportPizza.Name = "btnExportPizza";
-            this.btnExportPizza.Size = new System.Drawing.Size(114, 24);
+            this.btnExportPizza.Size = new System.Drawing.Size(114, 28);
             this.btnExportPizza.TabIndex = 7;
             this.btnExportPizza.Text = "Export Pizza";
             this.btnExportPizza.UseVisualStyleBackColor = true;
@@ -190,7 +205,7 @@
             this.btnExportSlizes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnExportSlizes.Location = new System.Drawing.Point(914, 3);
             this.btnExportSlizes.Name = "btnExportSlizes";
-            this.btnExportSlizes.Size = new System.Drawing.Size(114, 24);
+            this.btnExportSlizes.Size = new System.Drawing.Size(114, 28);
             this.btnExportSlizes.TabIndex = 8;
             this.btnExportSlizes.Text = "Export Slices";
             this.btnExportSlizes.UseVisualStyleBackColor = true;
@@ -234,21 +249,6 @@
             // timerRefresh
             // 
             this.timerRefresh.Tick += new System.EventHandler(this.timerRefresh_Tick);
-            // 
-            // pizzaCanvas1
-            // 
-            this.pizzaCanvas1.AutoScroll = true;
-            this.pizzaCanvas1.AutoScrollMinSize = new System.Drawing.Size(8000, 8000);
-            this.pizzaCanvas1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pizzaCanvas1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pizzaCanvas1.LoadingTime = "";
-            this.pizzaCanvas1.Location = new System.Drawing.Point(3, 43);
-            this.pizzaCanvas1.Name = "pizzaCanvas1";
-            this.pizzaCanvas1.PickOrder = Pizza.PizzaPie.EPickStrategy.First;
-            this.pizzaCanvas1.Seed = 0;
-            this.pizzaCanvas1.Size = new System.Drawing.Size(1031, 465);
-            this.pizzaCanvas1.SlicingTime = "";
-            this.pizzaCanvas1.TabIndex = 0;
             // 
             // PizzaForm
             // 

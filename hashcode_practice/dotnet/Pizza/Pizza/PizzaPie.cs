@@ -108,10 +108,10 @@ namespace Pizza
 
         public HashSet<Slice> PossibleSlices { get { return possibleSlices; } }
 
-        public int SliceId 
-        { 
-            get { return sliceId; } 
-            set { sliceId = value; } 
+        public int SliceId
+        {
+            get { return sliceId; }
+            set { sliceId = value; }
         }
     }
 
@@ -139,7 +139,7 @@ namespace Pizza
 
         public Slice(int id, Tile origin, int rows, int columns)
         {
-            this.id = id;   
+            this.id = id;
             this.origin = origin;
             this.rows = rows;
             this.columns = columns;
@@ -169,17 +169,33 @@ namespace Pizza
 
     public interface IPizza
     {
+        int Seed { get; set; }
+        int Score { get; }
         int MinimumTilesPerIngredient { get; }
         int MaximumTilesPerSlice { get; }
         int Rows { get; }
         int Columns { get; }
         IList<Slice> Slices { get; }
+        IList<List<Tile>> Tiles { get; }
+        int Missed { get; }
+        int Available { get; }
+        EPickStrategy PickOrder { get; set; }
+
         void Load(string urlPizza);
         void ExportPizzaAsImg(string urlPizzaImg);
         void ExportSlizedPizzaAsImg(string urlPizzaImg);
         void SaveResult(string urlResult);
         void Slice();
         void ValidateResult(string urlResult);
+
+        event PizzaEventHandler PizzaEvents;
+    }
+
+    public enum EPickStrategy
+    {
+        First,
+        Last,
+        Random,
     }
 
     public enum PizzaEvent
@@ -217,13 +233,6 @@ namespace Pizza
             Color.HotPink,
             Color.Purple };
 
-        public enum EPickStrategy
-        {
-            First,
-            Last,
-            Random,
-        }
-
         private int rows = 0;
         private int minimumTilesPerIngredient = 0;
         private int maximumTilesPerSlice = 0;
@@ -237,7 +246,6 @@ namespace Pizza
         private int loadedTiles = 0;
         private int allocatedTiles = 0;
         private int progress = 0;
-        private int numOfSlices = 0;
         Random rnd = null;
 
         public int MinimumTilesPerIngredient { get { return minimumTilesPerIngredient; } }
@@ -262,7 +270,7 @@ namespace Pizza
             PizzaEvents?.Invoke(this, e);
         }
 
-        public void Load(string urlPizza)
+        public virtual void Load(string urlPizza)
         {
             rnd = new Random(Seed);
             rows = 0;
@@ -277,12 +285,17 @@ namespace Pizza
             loadedTiles = 0;
             missedTiles = 0;
             allocatedTiles = 0;
-            numOfSlices = 0;
             allTiles.Clear();
             LoadTiles(urlPizza);
             CreateListOfValidShapes(true, true);
+            LoadExtra();
 
             RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Loaded, null));
+        }
+
+        protected virtual void LoadExtra()
+        {
+            return;
         }
 
         public void ValidateResult(string urlResult)
@@ -300,7 +313,7 @@ namespace Pizza
                 for (int c = 0; c < columns; c++)
                 {
                     Tile tile = new Tile(r, c, Ingredient.Unknown, -1);
-                    tiles[r].Add(tile);           
+                    tiles[r].Add(tile);
                 }
             }
 
@@ -315,7 +328,7 @@ namespace Pizza
                 Tile origin = new Tile(int.Parse(s[0]), int.Parse(s[1]), Ingredient.Something, -1);
                 Slice slice = new Slice(sliceId, origin, int.Parse(s[2]) - origin.Row, int.Parse(s[3]) - origin.Column);
                 slices.Add(slice);
-                for(int r = 0; r <= slice.Rows; r++)
+                for (int r = 0; r <= slice.Rows; r++)
                 {
                     for (int c = 0; c <= slice.Columns; c++)
                     {
@@ -344,7 +357,7 @@ namespace Pizza
             do
             {
                 canCut = false;
-                foreach(Tile tile in allTiles)
+                foreach (Tile tile in allTiles)
                 {
                     tile.PossibleSlices.Clear();
                 }
@@ -380,7 +393,7 @@ namespace Pizza
                     }
                 }
             } while (canCut);
-            
+
             // clean up the remaining possible shapes to regain some memory
             foreach (Tile tile in allTiles)
             {
@@ -517,7 +530,8 @@ namespace Pizza
 
         public void SaveResult(string urlResult)
         {
-            try { 
+            try
+            {
                 using (System.IO.StreamWriter file =
                 new System.IO.StreamWriter(urlResult))
                 {
@@ -532,48 +546,62 @@ namespace Pizza
             {
                 Console.Error.WriteLine(ex);
             }
+        }
 
+        protected virtual void CommenceSlicing()
+        {
+            try
+            {
+                if (Properties.Settings.Default.CutDistinctSlices)
+                {
+                    // this one does not perform well, I expected a different result
+                    CutDistinctSlices();
+                }
+
+                bool isDone = false;
+
+                progress = 0;
+                int sliceId = 0;
+                while (!isDone)
+                {
+                    Tile tile = LocateAvailableTile(PickOrder);
+                    if (tile == null)
+                    {
+                        isDone = true;
+                        break;
+                    }
+
+                    Slice slice = GetValidSlice(tile, Properties.Settings.Default.CheckNeighbour);
+
+                    if (slice != null)
+                    {
+                        Slice s = new Slice(sliceId++, tile, slice);
+                        CutPizza(s);
+                        RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Sliced, slice));
+                    }
+                    else
+                    {
+                        tile.Processed = true;
+                        string key = string.Format("{0:0000} {1:0000}", tile.Row, tile.Column);
+                        sortedTiles.Remove(key);
+                    }
+                    missedTiles = (Rows * Columns) - allocatedTiles;
+
+                    progress = sortedTiles.Count * 100 / (Rows * Columns);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
         }
 
         public void Slice()
         {
-            if(Properties.Settings.Default.CutDistinctSlices)
-            {
-                // this one does not perform well, I expected a different result
-                CutDistinctSlices();
-            }
+            var t = new Task(() => { CommenceSlicing(); });
+            t.Start();
+            t.Wait();
 
-            bool isDone = false;
-
-            progress = 0;
-            int sliceId = 0;
-            while (!isDone)
-            {
-                Tile tile = LocateAvailableTile(PickOrder);
-                if (tile == null)
-                {
-                    isDone = true;
-                    break;
-                }
-
-                Slice slice = GetValidSlice(tile, Properties.Settings.Default.CheckNeighbour);
-
-                if (slice != null)
-                {
-                    Slice s = new Slice(sliceId++, tile, slice);
-                    CutPizza(s);
-                    RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Sliced, slice));
-                }
-                else
-                {
-                    tile.Processed = true;
-                    string key = string.Format("{0:0000} {1:0000}", tile.Row, tile.Column);
-                    sortedTiles.Remove(key);
-                }
-                missedTiles = (Rows * Columns) - allocatedTiles;
-
-                progress = sortedTiles.Count * 100 / (Rows * Columns);
-            }
             RaisePizzaEvent(new PizzEventArgs(PizzaEvent.Done, null));
         }
 
@@ -607,7 +635,7 @@ namespace Pizza
                     tiles[slice.Origin.Row + r][slice.Origin.Column + c].SliceId = slice.Id;
 
                     string key = string.Format("{0:0000} {1:0000}", slice.Origin.Row + r, c + slice.Origin.Column);
-                    if (sortedTiles.ContainsKey(key)) sortedTiles.Remove(key); 
+                    if (sortedTiles.ContainsKey(key)) sortedTiles.Remove(key);
                 }
             }
             allocatedTiles += (slice.Rows * slice.Columns);
@@ -707,7 +735,7 @@ namespace Pizza
                                     pizzaImage.SetPixel(tile.Column, tile.Row, Color.Green);
                                     break;
                             }
-                       }
+                        }
                     }
 
                     pizzaImage.Bitmap.Save(urlPizzaImg, ImageFormat.Bmp);

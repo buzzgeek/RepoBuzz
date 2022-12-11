@@ -18,30 +18,38 @@ namespace Pizza
         private Brush unknownBrush = Brushes.LightPink;
         private Brush somethingBrush = Brushes.LightBlue;
 
-        private Brush []sliceBrushes = new Brush[] { Brushes.Blue, 
-            Brushes.Red, 
-            Brushes.Yellow, 
-            Brushes.Green, 
-            Brushes.Orange, 
-            Brushes.Turquoise, 
+        private Brush[] sliceBrushes = new Brush[] { Brushes.Blue,
+            Brushes.Red,
+            Brushes.Yellow,
+            Brushes.Green,
+            Brushes.Orange,
+            Brushes.Turquoise,
             Brushes.Indigo,
             Brushes.HotPink,
-            Brushes.Purple };
+            Brushes.Purple,
+            Brushes.Orchid,
+            Brushes.PaleGreen,
+            Brushes.RoyalBlue,
+            Brushes.MistyRose,
+            Brushes.Brown,
+            Brushes.Blue,
+        };
 
-        private PizzaPie pizza = new PizzaPie();
+        private IPizza pizza = new CellularPizza();
         private int tileSize = 20;
         private bool isLoaded = false;
         private bool isValidated = false;
+        private Random rand = new Random();
 
         public int Seed { get; set; } = 0;
-        public PizzaPie.EPickStrategy PickOrder { get; set; } = PizzaPie.EPickStrategy.First;
+        public EPickStrategy PickOrder { get; set; } = EPickStrategy.First;
 
         public string GetStatus()
         {
             return string.Format("Min.Ingredients:{0} / Max.Tiles:{1} / Loaded:{2} / Shapes:{3} / Score:{4} / Missed:{5}", pizza.MinimumTilesPerIngredient, pizza.MaximumTilesPerSlice, pizza.Available, pizza.Slices.Count, pizza.Score, pizza.Missed);
         }
 
-        public PizzaPie Pizza { get { return pizza; } }
+        public IPizza Pizza { get { return pizza; } }
 
         public string LoadingTime { get; set; } = "";
         public string SlicingTime { get; set; } = "";
@@ -54,11 +62,7 @@ namespace Pizza
             base.HorizontalScroll.Visible = true;
             ResizeRedraw = true;
             MouseWheel += PizzaCanvas_MouseWheel;
-            AutoScrollMinSize = new Size(20000, 20000);
-            HorizontalScroll.Minimum = 0;
-            VerticalScroll.Minimum = 0;
-            HorizontalScroll.Maximum = 20000;
-            VerticalScroll.Maximum = 20000;
+            VerticalScroll.Value = VerticalScroll.Maximum;
             pizza.PizzaEvents += OnPizzaEvent;
 
         }
@@ -149,8 +153,13 @@ namespace Pizza
         {
             base.OnPaint(e);
 
-            int rowOffset = pizza.Rows * VerticalScroll.Value / VerticalScroll.Maximum;
-            int colOffset = pizza.Columns * HorizontalScroll.Value / HorizontalScroll.Maximum;
+            
+            int vmax = VerticalScroll.Maximum - VerticalScroll.LargeChange;
+            int hmax = HorizontalScroll.Maximum - HorizontalScroll.LargeChange;
+
+
+            int rowOffset = (int)((pizza.Rows * VerticalScroll.Value) / vmax);
+            int colOffset = (int)((pizza.Columns * HorizontalScroll.Value) / hmax);
             int rowMax = (Height / tileSize);
             int colMax = (Width / tileSize);
 
@@ -202,7 +211,7 @@ namespace Pizza
                             if (sliceId > -1)
                                 brush = sliceBrushes[sliceId % sliceBrushes.Length];
                             else
-                                brush = somethingBrush;
+                                brush = sliceBrushes[rand.Next(0, sliceBrushes.Length)]; // random cols
                         }
 
                         if (sliceId != pizza.Tiles[relativeR][(relativeC + 1) % pizza.Columns].SliceId)
@@ -224,6 +233,10 @@ namespace Pizza
         private void PizzaCanvas_Scroll(object sender, ScrollEventArgs e)
         {
             Invalidate();
+        }
+
+        private void PizzaCanvas_SizeChanged(object sender, EventArgs e)
+        {
         }
     }
 }

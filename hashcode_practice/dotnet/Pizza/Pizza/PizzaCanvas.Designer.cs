@@ -37,6 +37,7 @@
             this.Name = "PizzaCanvas";
             this.Size = new System.Drawing.Size(643, 499);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PizzaCanvas_Scroll);
+            this.SizeChanged += new System.EventHandler(this.PizzaCanvas_SizeChanged);
             this.ResumeLayout(false);
 
         }

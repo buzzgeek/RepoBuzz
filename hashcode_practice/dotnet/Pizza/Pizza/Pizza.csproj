@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cell.cs" />
+    <Compile Include="CellularPizza.cs" />
     <Compile Include="PizzaForm.cs">
       <SubType>Form</SubType>
     </Compile>

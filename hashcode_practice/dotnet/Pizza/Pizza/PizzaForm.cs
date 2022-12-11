@@ -41,8 +41,8 @@ namespace Pizza
             int.TryParse(tbSeed.Text, out seed);
             pizzaCanvas1.Seed = seed;
 
-            PizzaPie.EPickStrategy pickOrder = PizzaPie.EPickStrategy.First;
-            Enum.TryParse<PizzaPie.EPickStrategy>(comboBoxPickOrder.Text, out pickOrder);
+            EPickStrategy pickOrder = EPickStrategy.First;
+            Enum.TryParse<EPickStrategy>(comboBoxPickOrder.Text, out pickOrder);
             pizzaCanvas1.PickOrder = pickOrder;
 
             var fileContent = string.Empty;
