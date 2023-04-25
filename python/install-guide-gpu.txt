@@ -54,12 +54,21 @@ create a new virtual environment in a path and a name of your choice. Here it is
 virtualenv --system-site-packages -p python ./venv
 
 
-activate the newly created environment
+activate the newly created environment in a window command prompt (eg. cmd)
+
 .\venv\Scripts\activate
+
+if you are using a unix derived terminal such as MINGW64, please note the extra dot for windows systems - see https://stackoverflow.com/questions/57318343/virtualenv-v16-7-2-powershell-activate-script-you-must-source-this-script-p
+
+. .\venv\Scripts\activate
+
 
 you should see some thing like this
 
-todo
+(venv) c:\
+
+Side note, to deactivate the environment simply type
+deactivate
 
 install most current version of tensorflow-gpu to collect all required dependencies
 
